@@ -5,47 +5,54 @@
 
     This module provides conversions between base-12 and base-10.
 
-    This class provides simple conversion between the base-12 data used
+    The class performs simple conversions between the base-12 data used
     by astrology (ie. angles, coordinates, and time) and decimal numbers.
 
 """
 
 import math
+from decimal import Decimal
 
 
 class DuoDec:
-    """ This class is instatiated with either a duodecimal string or a
-    decimal float, and can be converted between one another.
+    """ This class is instatiated with either a duodecimal list
+    or a decimal float, and can be converted between one another.
 
     """
 
     def __init__(self, value):
-        self.value = value
+        """ Accepts either a float, a float as a string, a list of ints,
+        or a list of ints as strings.
+        """
+        if isinstance(value, float):
+            self.value = value
+        elif isinstance(value, list):
+            self.value = [value[0]] + [int(v) for v in value[1:]]
+        elif isinstance(value, str):
+            self.value = float(value)
+        else:
+            self.value = None
 
     def to_decimal(self):
-        """ Returns the decimal conversion of a duodecimal string or list. """
-        if isinstance(self.value, float):
+        """ Returns the decimal conversion of a duodecimal list. """
+        if isinstance(self.value, float) or self.value is None:
             return self.value
 
+        values = [abs(v) / 60**k for (k,v) in enumerate(self.value[1:])]
         multiplier = -1 if self.value[0] == '-' else 1
-        value = self.value.split(':') if isinstance(self.value, str) else self.value[1:]
-        values = [abs(int(v)) / 60**(k) for (k,v) in enumerate(value)]
         return sum(values) * multiplier
 
-
-    def to_duodecimal(self, as_list=False):
-        """ Returns the duodecimal conversion of a decimal float. """
-        if isinstance(self.value, str):
+    def to_duodecimal(self):
+        """ Returns the duodecimal conversion of a decimal float
+        as a list. """
+        if isinstance(self.value, list) or self.value is None:
             return self.value
 
-        values = [0, 0, 0, 0]
         value = abs(self.value)
+        values = [0, 0, 0, 0]
 
         for i in range(4):
             values[i] = math.floor(value)
-            value = (value - values[i]) * 60
+            value = (Decimal(str(value)) - Decimal(str(values[i]))) * 60
 
-        if as_list:
-            return (['-'] if self.value < 0 else ['+']) + values
-
-        return ('-' if self.value < 0 else '+') + ':'.join(str(v) for v in values)
+        return ['-' if self.value < 0 else '+'] + values

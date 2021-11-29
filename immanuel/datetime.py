@@ -32,6 +32,7 @@ class DateTime:
         self.jdn = self._jdn()
 
     def _timezone(self):
+        """ Returns the timezone's name. """
         return TimezoneFinder().certain_timezone_at(lat=self.coords.lat, lng=self.coords.lon)
 
     def _offset(self):
