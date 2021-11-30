@@ -6,14 +6,14 @@
     This module provides a simple class for handling location-specific
     dates and times.
 
-    The class essentially does the job of pyswisseph's date_conversion()
-    function but additionally takes into account timezones based on
+    The class essentially wraps pyswisseph's utc_time_zone() and utc_to_jd()
+    functions but additionally takes into account timezones based on
     lat/long coordinates and does the heavy lifting for you.
 
 """
 
+import swisseph
 from datetime import datetime
-from jdcal import gcal2jd
 from pytz import timezone, utc
 from timezonefinder import TimezoneFinder
 
@@ -44,6 +44,6 @@ class DateTime:
 
     def _jdn(self):
         """ Returns the Julian date. """
-        date = sum(gcal2jd(self.dt.year, self.dt.month, self.dt.day))
-        time = (self.dt.hour-self.offset)/24 + self.dt.minute/1440 + self.dt.second/86400
-        return date + time
+        dt = swisseph.utc_time_zone(self.dt.year, self.dt.month, self.dt.day, self.dt.hour, self.dt.minute, self.dt.second, self.offset)
+        et, ut = swisseph.utc_to_jd(*dt, 1)
+        return ut
