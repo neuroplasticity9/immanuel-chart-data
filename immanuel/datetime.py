@@ -45,5 +45,5 @@ class DateTime:
     def _jdn(self):
         """ Returns the Julian date. """
         dt = swisseph.utc_time_zone(self.dt.year, self.dt.month, self.dt.day, self.dt.hour, self.dt.minute, self.dt.second, self.offset)
-        et, ut = swisseph.utc_to_jd(*dt, 1)
+        et, ut = swisseph.utc_to_jd(*dt, swisseph.GREG_CAL)
         return ut
