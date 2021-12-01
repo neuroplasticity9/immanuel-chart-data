@@ -33,7 +33,10 @@ class DuoDec:
         else:
             self.value = None
 
-    def to_decimal(self):
+        self.float = self._to_float()
+        self.list = self._to_list()
+
+    def _to_float(self):
         """ Returns the decimal conversion of a duodecimal list. """
         if isinstance(self.value, float) or self.value is None:
             return self.value
@@ -42,7 +45,7 @@ class DuoDec:
         multiplier = -1 if self.value[0] == '-' else 1
         return sum(values) * multiplier
 
-    def to_duodecimal(self):
+    def _to_list(self):
         """ Returns the duodecimal conversion of a decimal float
         as a list. """
         if isinstance(self.value, list) or self.value is None:

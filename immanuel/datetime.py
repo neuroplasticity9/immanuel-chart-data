@@ -29,7 +29,7 @@ class DateTime:
         self.coords = coords
         self.timezone = self._timezone()
         self.offset = self._offset()
-        self.jdn = self._jdn()
+        self.jd = self._jd()
 
     def _timezone(self):
         """ Returns the timezone's name. """
@@ -42,7 +42,7 @@ class DateTime:
         dt_utc = utc.localize(self.dt)
         return int((dt_utc - dt_local).total_seconds() / 3600)
 
-    def _jdn(self):
+    def _jd(self):
         """ Returns the Julian date. """
         dt = swisseph.utc_time_zone(self.dt.year, self.dt.month, self.dt.day, self.dt.hour, self.dt.minute, self.dt.second, self.offset)
         et, ut = swisseph.utc_to_jd(*dt, swisseph.GREG_CAL)

@@ -32,4 +32,4 @@ class Coords:
 
         direction = next(filter(str.isalpha, value))
         dd_list = ['-' if direction.upper() in 'SW' else '+'] + value.split(direction)
-        return DuoDec(dd_list).to_decimal()
+        return DuoDec(dd_list).float
