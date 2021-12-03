@@ -6,9 +6,9 @@
     This module provides a simple class for handling location-specific
     dates and times.
 
-    The class essentially wraps pyswisseph's utc_time_zone() and utc_to_jd()
-    functions but additionally takes into account timezones based on
-    lat/long coordinates and does the heavy lifting for you.
+    The class essentially wraps pyswisseph's jul_day() function but
+    additionally takes into account timezones based on lat/long coordinates
+    and does the heavy lifting for you.
 
 """
 
@@ -16,6 +16,7 @@ import swisseph
 from datetime import datetime
 from pytz import timezone, utc
 from timezonefinder import TimezoneFinder
+from immanuel.duodec import DuoDec
 
 
 class DateTime:
@@ -44,6 +45,5 @@ class DateTime:
 
     def _jd(self):
         """ Returns the Julian date. """
-        dt = swisseph.utc_time_zone(self.dt.year, self.dt.month, self.dt.day, self.dt.hour, self.dt.minute, self.dt.second, self.offset)
-        et, ut = swisseph.utc_to_jd(*dt, swisseph.GREG_CAL)
-        return ut
+        hour = DuoDec(['+', self.dt.hour-self.offset, self.dt.minute, self.dt.second]).float
+        return swisseph.julday(self.dt.year, self.dt.month, self.dt.day, hour)
