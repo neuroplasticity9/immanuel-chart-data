@@ -41,7 +41,7 @@ class DateTime:
         tz = timezone(self.timezone)
         dt_local = tz.localize(self.dt)
         dt_utc = utc.localize(self.dt)
-        return int((dt_utc - dt_local).total_seconds() / 3600)
+        return (dt_utc - dt_local).total_seconds() / 3600
 
     def _jd(self):
         """ Returns the Julian date. """
