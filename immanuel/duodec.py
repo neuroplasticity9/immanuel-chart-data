@@ -40,7 +40,7 @@ class DuoDec:
         if isinstance(self.value, float) or self.value is None:
             return self.value
 
-        values = [abs(v) / 60**k for (k,v) in enumerate(self.value[1:])]
+        values = [v / 60**k for (k,v) in enumerate(self.value[1:])]
         multiplier = -1 if self.value[0] == '-' else 1
         return sum(values) * multiplier
 
