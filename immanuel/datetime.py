@@ -25,9 +25,10 @@ class DateTime:
 
     """
 
-    def __init__(self, dt, coords):
+    def __init__(self, dt, coords, is_dst = False):
         self.dt = datetime.fromisoformat(dt)
         self.coords = coords
+        self.is_dst = is_dst
         self.timezone = self._timezone()
         self.offset = self._offset()
         self.jd = self._jd()
@@ -39,7 +40,7 @@ class DateTime:
     def _offset(self):
         """ Returns the timezone's offset. """
         tz = timezone(self.timezone)
-        dt_local = tz.localize(self.dt)
+        dt_local = tz.localize(self.dt, self.is_dst)
         dt_utc = utc.localize(self.dt)
         return (dt_utc - dt_local).total_seconds() / 3600
 
