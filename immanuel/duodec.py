@@ -10,7 +10,6 @@
 
 """
 
-import math
 from decimal import Decimal
 
 
@@ -51,11 +50,9 @@ class DuoDec:
         if isinstance(self.value, list) or self.value is None:
             return self.value
 
-        value = abs(self.value)
-        values = [0, 0, 0, 0]
+        values = [abs(self.value)]
 
-        for i in range(4):
-            values[i] = math.floor(value)
-            value = (Decimal(str(value)) - Decimal(str(values[i]))) * 60
+        for i in range(3):
+            values.append(Decimal(str(values[i])) % 1 * 60)
 
-        return ['-' if self.value < 0 else '+'] + values
+        return ['-' if self.value < 0 else '+'] + [int(v) for v in values]
