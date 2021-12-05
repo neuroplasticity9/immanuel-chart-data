@@ -46,13 +46,15 @@ class DuoDec:
 
     def _to_list(self):
         """ Returns the duodecimal conversion of a decimal float
-        as a list. """
+        as an HH:MM:SS list. """
         if isinstance(self.value, list) or self.value is None:
             return self.value
 
         values = [abs(self.value)]
 
-        for i in range(3):
+        for i in range(2):
             values.append(Decimal(str(values[i])) % 1 * 60)
+
+        values[2] = round(values[2])
 
         return ['-' if self.value < 0 else '+'] + [int(v) for v in values]
