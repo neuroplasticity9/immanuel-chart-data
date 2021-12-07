@@ -12,39 +12,50 @@
 
 """
 
-import swisseph
 from datetime import datetime
-from pytz import timezone, utc
+
+import swisseph as swe
+from pytz import timezone, utc, exceptions
 from timezonefinder import TimezoneFinder
-from immanuel.duodec import DuoDec
+
+from immanuel import convert
 
 
 class DateTime:
-    """ This class is instatiated with a datetime string such as is accepted
-    by the standard Python datetime.fromisoformat() method, and coordinates.
+    """ This class is instatiated with a standard Python datetime object,
+    and decimal lat / lon coordinates as floats. is_dst can be True or False
+    to clarify ambiguous datetimes (eg. 01:30 when DST ends).
 
     """
 
-    def __init__(self, dt, coords, is_dst = False):
-        self.dt = datetime.fromisoformat(dt)
-        self.coords = coords
+    def __init__(self, dt: datetime, lat: float, lon: float, is_dst = None):
+        self.dt = dt
+        self.lat = lat
+        self.lon = lon
         self.is_dst = is_dst
+        self.dst_ambiguous = False
         self.timezone = self._timezone()
         self.offset = self._offset()
-        self.jd = self._jd()
+        self.jd = None if self.offset is None else self._jd()
 
     def _timezone(self):
         """ Returns the timezone's name. """
-        return TimezoneFinder().certain_timezone_at(lat=self.coords.lat, lng=self.coords.lon)
+        return TimezoneFinder().certain_timezone_at(lat=self.lat, lng=self.lon)
 
     def _offset(self):
-        """ Returns the timezone's offset. """
+        """ Returns the timezone's offset after DST ambiguity check. """
         tz = timezone(self.timezone)
-        dt_local = tz.localize(self.dt, self.is_dst)
+
+        try:
+            dt_local = tz.localize(self.dt, self.is_dst)
+        except exceptions.AmbiguousTimeError:
+            self.dst_ambiguous = True
+            return None
+
         dt_utc = utc.localize(self.dt)
         return (dt_utc - dt_local).total_seconds() / 3600
 
     def _jd(self):
         """ Returns the Julian date. """
-        hour = DuoDec(['+', self.dt.hour-self.offset, self.dt.minute, self.dt.second]).float
-        return swisseph.julday(self.dt.year, self.dt.month, self.dt.day, hour)
+        hour = convert.dms_to_dec(['+', self.dt.hour-self.offset, self.dt.minute, self.dt.second])
+        return swe.julday(self.dt.year, self.dt.month, self.dt.day, hour)
