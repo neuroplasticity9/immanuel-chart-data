@@ -27,10 +27,16 @@ def dms_to_dec(dms: list):
 
 def dms_to_string(dms: list, format: int = FORMAT_DMS):
     """ Returns a D:M:S list as either a D:M:S or a D°M'S" string. """
-    if format == FORMAT_TIME:
-        return dms[0] + ':'.join(['%02d' % v for v in dms[1:]])
-    elif format == FORMAT_DMS:
-        return dms[0] + ''.join(['%02d' % v + [u'\N{DEGREE SIGN}', "'", '"'][k] for k, v in enumerate(dms[1:])])
+    if format == FORMAT_DMS:
+        symbols = [u'\N{DEGREE SIGN}', "'", '"']
+        string = ''.join(['%02d' % v + symbols[k] for k, v in enumerate(dms[1:])])
+    elif format == FORMAT_TIME:
+        string = ':'.join(['%02d' % v for v in dms[1:]])
+
+    if dms[0] == '-':
+        string = '-' + string
+
+    return string
 
 
 def dec_to_dms(dec: float):
