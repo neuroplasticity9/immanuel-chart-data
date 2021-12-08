@@ -17,29 +17,25 @@ from decimal import Decimal
 def dms_to_dec(dms: list):
     """ Returns the decimal conversion of a D:M:S list. """
     dec = sum([float(v) / 60**k for k, v in enumerate(dms[1:])])
-    return float(f'{dms[0]}{dec}')
+    return dec if dms[0] == '+' else -dec
 
 
-def dec_to_dms(dec: float, resolution: int = 2):
-    """ Returns the D:M:S conversion of a decimal float. """
-    values = [abs(dec)]
+def dec_to_dms(dec: float):
+    """ Returns the rounded D:M:S conversion of a decimal float. """
+    dms = ['-' if dec < 0 else '+', abs(dec)]
 
-    for i in range(resolution):
-        values.append(Decimal(str(values[i])) % 1 * 60)
+    for i in range(1, 3):
+        dms.append(Decimal(str(dms[i])) % 1 * 60)
+        dms[i] = int(dms[i])
 
-    # Round up last digit if it's not a M or S that would round to 60.
-    if resolution == 0 or values[resolution] < 59.5:
-        values[resolution] = round(values[resolution])
-    # Otherwise work backwards zeroing 60 digits & rounding up pre-60 digits.
-    else:
-        for i in range(resolution, 0, -1):
-            if values[i] >= 59.5:
-                values[i-1] += 1
-                values[i:] = [0 for x in values[i:]]
-                if values[i-1] < 59.5:
-                    break
+    dms[3] = round(dms[3])
 
-    return ['-' if dec < 0 else '+'] + [int(v) for v in values]
+    for i in range(3, 1, -1):
+        if dms[i] == 60:
+            dms[i-1] += 1
+            dms[i] = 0
+
+    return dms
 
 
 def coords_to_dec(lat, lon):
@@ -47,11 +43,8 @@ def coords_to_dec(lat, lon):
     return [_coord_to_dec(v) for v in [lat, lon]]
 
 def _coord_to_dec(coord):
-    """ Takes either a float, a float-as-string, or a 'XXyZZ' string,
+    """ Takes either a float, a float-as-string, or a '12w34.56' type string,
     and returns a float. """
-    if isinstance(coord, float):
-        return coord
-
     try:
         return float(coord)
     except ValueError:
