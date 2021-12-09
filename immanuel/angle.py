@@ -9,9 +9,10 @@
     instances. It takes care of common conversions between decimal
     angles and human-readable formats.
 
-    The "sign" member assumes a 0-360 chart angle (ecliptic longitude)
-    and converts it to a per-sign angle - this is of course irrelevant
-    if the original angle passed is not an ecliptic longitude.
+    If the "ecliptic" argument is set to True, the "sign" member assumes
+    a 0-360 chart angle (ecliptic longitude) and converts it to a per-sign
+    angle - this is of course irrelevant if the original angle passed is not
+    an ecliptic longitude.
 
 """
 
@@ -22,9 +23,9 @@ from immanuel import convert
 
 
 class Angle:
-    def __init__(self, angle):
+    def __init__(self, angle, ecliptic = True):
         self.full = angle
-        self.sign = float(Decimal(str(angle)) % 30)
+        self.sign = float(Decimal(str(angle)) % 30) if ecliptic else angle
         self.dict = dict(zip(['direction', 'degrees', 'minutes', 'seconds'], convert.dec_to_dms(self.sign)))
         self.str = convert.dec_to_string(self.sign, convert.FORMAT_DMS)
 
