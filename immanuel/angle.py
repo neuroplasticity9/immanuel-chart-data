@@ -3,16 +3,15 @@
     Author: Robert Davies (robert@theriftlab.com)
 
 
-    This module provides a simple class for handling chart angles.
+    This module provides simple classes for handling angles.
 
-    Instances of this class can be compared against floats or other
+    Instances of the Angle class can be compared against floats or other
     instances. It takes care of common conversions between decimal
     angles and human-readable formats.
 
-    If the "ecliptic" argument is set to True, the "sign" member assumes
-    a 0-360 chart angle (ecliptic longitude) and converts it to a per-sign
-    angle - this is of course irrelevant if the original angle passed is not
-    an ecliptic longitude.
+    The ChartAngle class inherits Angle and converts full ecliptic 0-359°
+    longitudes to per-sign 0-29° longitudes. Comparisons are still based on
+    the full ecliptic longitude (eg. 5° Taurus is > 20° Aries).
 
 """
 
@@ -23,11 +22,10 @@ from immanuel import convert
 
 
 class Angle:
-    def __init__(self, angle, ecliptic = True):
-        self.full = angle
-        self.sign = float(Decimal(str(angle)) % 30) if ecliptic else angle
-        self.dict = dict(zip(['direction', 'degrees', 'minutes', 'seconds'], convert.dec_to_dms(self.sign)))
-        self.str = convert.dec_to_string(self.sign, convert.FORMAT_DMS)
+    def __init__(self, angle):
+        self.angle = self.full = angle
+        self.dict = dict(zip(['direction', 'degrees', 'minutes', 'seconds'], convert.dec_to_dms(self.angle)))
+        self.str = convert.dec_to_string(self.angle, convert.FORMAT_DMS)
 
     def __lt__(self, other: float | Angle) -> bool:
         return self.full < (other.full if isinstance(other, Angle) else other)
@@ -49,3 +47,9 @@ class Angle:
 
     def __str__(self):
         return self.str
+
+
+class ChartAngle(Angle):
+    def __init__(self, angle):
+        super().__init__(float(Decimal(str(angle)) % 30))
+        self.full = angle
