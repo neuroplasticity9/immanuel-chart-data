@@ -69,17 +69,17 @@ def coords_to_dec(lat, lon):
 
 def _coord_to_dec(coord):
     """ Takes either a float, a float-as-string, a 12w34.56-type string,
-    or a 12°34'56.78"-type string, and returns a float. """
+    or a 12°34'56.78" / 12:34:56.78-type string, and returns a float. """
     try:
         return float(coord)
     except ValueError:
         digits = re.findall(r'[0-9\.-]+', coord)
-        char = coord[len(digits[0])].upper()
         floats = [float(v) for v in digits]
+        char = coord[len(digits[0])].upper()
 
         if char in 'NESW':
             dms = ['-' if char in 'SW' else '+'] + floats
-        elif char == u'\N{DEGREE SIGN}':
+        else:
             dms = ['-' if floats[0] < 0 else '+', abs(floats[0])] + floats[1:]
 
         return dms_to_dec(dms)
