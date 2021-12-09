@@ -38,11 +38,11 @@ class DateTime:
         self.offset = self._offset()
         self.jd = None if self.offset is None else self._jd()
 
-    def _timezone(self):
+    def _timezone(self) -> str:
         """ Returns the timezone's name. """
         return TimezoneFinder().certain_timezone_at(lat=self.lat, lng=self.lon)
 
-    def _offset(self):
+    def _offset(self) -> float:
         """ Returns the timezone's offset after DST ambiguity check. """
         tz = timezone(self.timezone)
 
@@ -55,7 +55,7 @@ class DateTime:
         dt_utc = utc.localize(self.dt)
         return (dt_utc - dt_local).total_seconds() / 3600
 
-    def _jd(self):
+    def _jd(self) -> float:
         """ Returns the Julian date. """
         hour = convert.dms_to_dec(['+', self.dt.hour-self.offset, self.dt.minute, self.dt.second])
         return swe.julday(self.dt.year, self.dt.month, self.dt.day, hour)

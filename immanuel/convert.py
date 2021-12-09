@@ -19,13 +19,13 @@ FORMAT_TIME = 0
 FORMAT_DMS = 1
 
 
-def dms_to_dec(dms: list):
+def dms_to_dec(dms: list) -> float:
     """ Returns the decimal conversion of a D:M:S list. """
     dec = sum([float(v) / 60**k for k, v in enumerate(dms[1:])])
     return dec if dms[0] == '+' else -dec
 
 
-def dms_to_string(dms: list, format: int = FORMAT_DMS):
+def dms_to_string(dms: list, format: int = FORMAT_DMS) -> str:
     """ Returns a D:M:S list as either a D:M:S or a D°M'S" string. """
     if format == FORMAT_DMS:
         symbols = [u'\N{DEGREE SIGN}', "'", '"']
@@ -39,7 +39,7 @@ def dms_to_string(dms: list, format: int = FORMAT_DMS):
     return string
 
 
-def dec_to_dms(dec: float):
+def dec_to_dms(dec: float) -> list[str | int]:
     """ Returns the rounded D:M:S conversion of a decimal float. """
     dms = ['-' if dec < 0 else '+', abs(dec)]
 
@@ -57,17 +57,17 @@ def dec_to_dms(dec: float):
     return dms
 
 
-def dec_to_string(dec: float, format: int = FORMAT_DMS):
+def dec_to_string(dec: float, format: int = FORMAT_DMS) -> str:
     """ Returns a decimal float as either a D:M:S or a D°M'S" string. """
     return dms_to_string(dec_to_dms(dec), format)
 
 
-def coords_to_dec(lat, lon):
+def coords_to_dec(lat, lon) -> tuple[float]:
     """ Converts the passed values to decimal format if necessary. """
-    return [_coord_to_dec(v) for v in [lat, lon]]
+    return (_coord_to_dec(v) for v in [lat, lon])
 
 
-def _coord_to_dec(coord):
+def _coord_to_dec(coord) -> float:
     """ Takes either a float, a float-as-string, a 12w34.56-type string,
     or a 12°34'56.78" / 12:34:56.78-type string, and returns a float. """
     try:

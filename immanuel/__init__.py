@@ -5,7 +5,7 @@
 """
 
 import os
-import swisseph
+import swisseph as swe
 
 EPHE_PATH = os.path.dirname(__file__) + os.sep + 'resources' + os.sep  + 'pyswisseph'
-swisseph.set_ephe_path(EPHE_PATH)
+swe.set_ephe_path(EPHE_PATH)
