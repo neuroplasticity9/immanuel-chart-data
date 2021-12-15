@@ -45,11 +45,14 @@ class Planet(Item):
         self.declination = Angle(dec)
         self.speed = Angle(speed)
         self.distance = dist
+        self.out_of_bounds = self._out_of_bounds()
         self.movement = self._movement()
         self.motion = self._motion()
         self.dignity = self._dignity()
         self.score = self._score()
-        self.out_of_bounds = not const.DEC_LOWER_BOUND < self.declination < const.DEC_UPPER_BOUND
+
+    def _out_of_bounds(self):
+        return not const.DEC_LOWER_BOUND < self.declination < const.DEC_UPPER_BOUND
 
     def _movement(self):
         if abs(self.speed) <= const.STATION_SPEED:

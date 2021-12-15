@@ -82,6 +82,6 @@ class Chart:
 
     def _get_house(self, lon):
         for house in self.houses.values():
-            if lon >= house.longitude and lon < house.longitude + house.size:
+            if house.longitude <= lon < house.longitude + house.size:
                 return house.name
         return None
