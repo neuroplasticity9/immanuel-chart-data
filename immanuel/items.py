@@ -3,6 +3,7 @@ from immanuel.angle import Angle, ChartAngle
 
 
 class Item:
+    # TODO: is this needed? maybe keep if using __dict__?
     def __init__(self):
         self.name = ''
         self.sign = ''
@@ -14,7 +15,7 @@ class Item:
         return const.SIGNS[int(longitude/30)]
 
     def __str__(self):
-        return f'{self.name} {self.sign} {self.longitude} {self.speed}'
+        return f'{self.name} {self.sign} {self.longitude}'
 
 
 class AxisPoint(Item):
@@ -46,21 +47,34 @@ class Planet(Item):
         self.distance = dist
         self.movement = self._movement()
         self.motion = self._motion()
-        self.modality = ''
-        self.gender = ''
-        self.dignity = ''
+        self.dignity = self._dignity()
+        self.score = self._score()
         self.out_of_bounds = not const.DEC_LOWER_BOUND < self.declination < const.DEC_UPPER_BOUND
 
     def _movement(self):
         if abs(self.speed) <= const.STATION_SPEED:
-            return const.MOVEMENT_STATION
+            return const.STATION
         elif self.speed < -const.STATION_SPEED:
-            return const.MOVEMENT_RETROGRADE
+            return const.RETROGRADE
         elif self.speed > const.STATION_SPEED:
-            return const.MOVEMENT_DIRECT
+            return const.DIRECT
 
     def _motion(self):
         if abs(self.speed) < const.MEAN_MOTIONS[self.name]:
-            return const.MOTION_SLOW
+            return const.SLOW
         elif abs(self.speed) >= const.MEAN_MOTIONS[self.name]:
-            return const.MOTION_FAST
+            return const.FAST
+
+    def _dignity(self):
+        for dignity, sign in const.ESSENTIAL_DIGNITIES[self.name].items():
+            if isinstance(sign, tuple):
+                if self.sign in sign:
+                    return dignity
+            elif self.sign == sign:
+                return dignity
+
+        return 'None'
+
+    def _score(self):
+        # TODO
+        return 0

@@ -12,7 +12,7 @@ class Chart:
         self.jd = dt.jd
         self.lat = lat
         self.lon = lon
-        self.hsys = const.HOUSE_SYSTEMS[hsys if hsys is not None else const.HSYS_PLACIDUS]
+        self.hsys = const.HOUSE_SYSTEMS[hsys if hsys is not None else const.PLACIDUS]
         self.aspects = {}   # TODO: default list
         self.orbs = {}      # TODO: default list
         self.houses = {}

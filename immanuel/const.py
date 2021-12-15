@@ -72,34 +72,34 @@ ANGLES = {
 
 # House systems
 
-HSYS_ALCABITUS = 'Alcabitus'
-HSYS_AZIMUTHAL = 'Azimuthal'
-HSYS_CAMPANUS = 'Campanus'
-HSYS_EQUAL = 'Equal'
-HSYS_KOCH = 'Koch'
-HSYS_MERIDIAN = 'Meridian'
-HSYS_MORINUS = 'Morinus'
-HSYS_PLACIDUS = 'Placidus'
-HSYS_POLICH_PAGE = 'Polich Page'
-HSYS_PORPHYRIUS = 'Porphyrius'
-HSYS_REGIOMONTANUS = 'Regiomontanus'
-HSYS_VEHLOW_EQUAL = 'Vehlow Equal'
-HSYS_WHOLE_SIGN = 'Whole Sign'
+ALCABITUS = 'Alcabitus'
+AZIMUTHAL = 'Azimuthal'
+CAMPANUS = 'Campanus'
+EQUAL = 'Equal'
+KOCH = 'Koch'
+MERIDIAN = 'Meridian'
+MORINUS = 'Morinus'
+PLACIDUS = 'Placidus'
+POLICH_PAGE = 'Polich Page'
+PORPHYRIUS = 'Porphyrius'
+REGIOMONTANUS = 'Regiomontanus'
+VEHLOW_EQUAL = 'Vehlow Equal'
+WHOLE_SIGN = 'Whole Sign'
 
 HOUSE_SYSTEMS = {
-    HSYS_ALCABITUS: b'B',
-    HSYS_AZIMUTHAL: b'H',
-    HSYS_CAMPANUS: b'C',
-    HSYS_EQUAL: b'A',
-    HSYS_KOCH: b'K',
-    HSYS_MERIDIAN: b'X',
-    HSYS_MORINUS: b'M',
-    HSYS_PLACIDUS: b'P',
-    HSYS_POLICH_PAGE: b'T',
-    HSYS_PORPHYRIUS: b'O',
-    HSYS_REGIOMONTANUS: b'R',
-    HSYS_VEHLOW_EQUAL: b'V',
-    HSYS_WHOLE_SIGN: b'W',
+    ALCABITUS: b'B',
+    AZIMUTHAL: b'H',
+    CAMPANUS: b'C',
+    EQUAL: b'A',
+    KOCH: b'K',
+    MERIDIAN: b'X',
+    MORINUS: b'M',
+    PLACIDUS: b'P',
+    POLICH_PAGE: b'T',
+    PORPHYRIUS: b'O',
+    REGIOMONTANUS: b'R',
+    VEHLOW_EQUAL: b'V',
+    WHOLE_SIGN: b'W',
 }
 
 # Astrological constants
@@ -125,9 +125,79 @@ STATION_SPEED = 0.0003      # ~1 second of movement
 
 # Movement & motion
 
-MOVEMENT_RETROGRADE = 'Retrograde'
-MOVEMENT_STATION = 'Station'
-MOVEMENT_DIRECT = 'Direct'
+RETROGRADE = 'Retrograde'
+STATION = 'Station'
+DIRECT = 'Direct'
 
-MOTION_SLOW = 'Slow'
-MOTION_FAST = 'Fast'
+SLOW = 'Slow'
+FAST = 'Fast'
+
+# Main essential dignities
+
+DOMICILE = 'Domicile'
+EXALTED = 'Exalted'
+DETRIMENT = 'Detriment'
+FALL = 'Fall'
+
+ESSENTIAL_DIGNITIES = {
+    SUN: {
+        DOMICILE: (LEO),
+        EXALTED: ARIES,
+        DETRIMENT: AQUARIUS,
+        FALL: LIBRA,
+    },
+    MOON: {
+        DOMICILE: (CANCER),
+        EXALTED: TAURUS,
+        DETRIMENT: CAPRICORN,
+        FALL: SCORPIO,
+    },
+    MERCURY: {
+        DOMICILE: (GEMINI, VIRGO),
+        EXALTED: VIRGO,
+        DETRIMENT: SAGITTARIUS,
+        FALL: PISCES,
+    },
+    VENUS: {
+        DOMICILE: (TAURUS, LIBRA),
+        EXALTED: PISCES,
+        DETRIMENT: ARIES,
+        FALL: VIRGO,
+    },
+    MARS: {
+        DOMICILE: (ARIES, SCORPIO),
+        EXALTED: CAPRICORN,
+        DETRIMENT: LIBRA,
+        FALL: CANCER,
+    },
+    JUPITER: {
+        DOMICILE: (SAGITTARIUS, PISCES),
+        EXALTED: CANCER,
+        DETRIMENT: GEMINI,
+        FALL: CAPRICORN,
+    },
+    SATURN: {
+        DOMICILE: (CAPRICORN, AQUARIUS),
+        EXALTED: LIBRA,
+        DETRIMENT: CANCER,
+        FALL: ARIES,
+    },
+    URANUS: {
+        DOMICILE: (AQUARIUS),
+        EXALTED: SCORPIO,
+        DETRIMENT: LEO,
+        FALL: TAURUS,
+    },
+    NEPTUNE: {
+        DOMICILE: (PISCES),
+        EXALTED: LEO,
+        DETRIMENT: VIRGO,
+        FALL: AQUARIUS,
+    },
+    PLUTO: {
+        DOMICILE: (SCORPIO),
+        EXALTED: VIRGO,
+        DETRIMENT: TAURUS,
+        FALL: PISCES,
+    }
+}
