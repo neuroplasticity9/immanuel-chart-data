@@ -52,6 +52,9 @@ class Angle:
     def __ge__(self, other: float | Angle) -> bool:
         return self.full >= (other.full if isinstance(other, Angle) else other)
 
+    def __abs__(self):
+        return abs(self.full)
+
     def __str__(self):
         return self.str
 

@@ -21,7 +21,7 @@ class Chart:
         self.planets = {}
         self.asteroids = {}
         self.fixed_stars = {}
-        self._ascmc = ()
+        self._swe_axis = ()
         self._houses()
         self._axis()
         self._points()
@@ -31,23 +31,25 @@ class Chart:
     def _houses(self):
         """ This must be called before _axis() since pywisseph provides the
         house cusps and axis point angles with the same function call. """
-        cusps, self._ascmc = swe.houses(self.jd, self.lat, self.lon, self.hsys)
+        cusps, ascmc, cuspsspeed, ascmcspeed = swe.houses_ex2(self.jd, self.lat, self.lon, self.hsys)
+        self._swe_axis = (ascmc, ascmcspeed)
 
         for i, cusp in enumerate(cusps):
             house_number = i + 1
-            size = float((Decimal(str(cusps[i+1 if i < 11 else 0])) - Decimal(str(cusp))) % 360)
-            self.houses[house_number] = House(house_number, cusp, size)
+            size = abs(float((Decimal(str(cusps[i+1 if i < 11 else 0])) - Decimal(str(cusp))) % 360))
+            self.houses[house_number] = House(house_number, cusp, size, cuspsspeed[i])
 
 
     def _axis(self):
-        """ Get the main axis points from _ascmc stored by _houses(). """
+        """ Get the main axis points from _swe_axis stored by _houses(). """
         for name, swe_index in const.ANGLES.items():
-            lon = self._ascmc[swe_index]
+            lon = self._swe_axis[0][swe_index]
+            speed = self._swe_axis[1][swe_index]
 
             if name in [const.DESC, const.IC]:
                 lon = abs((lon - 180) % 360)
 
-            self.axis[name] = AxisPoint(name, lon)
+            self.axis[name] = AxisPoint(name, lon, speed)
 
 
     def _points(self):

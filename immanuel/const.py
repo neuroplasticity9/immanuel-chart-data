@@ -106,3 +106,28 @@ HOUSE_SYSTEMS = {
 
 DEC_LOWER_BOUND = -23.45
 DEC_UPPER_BOUND = 23.45
+
+MEAN_MOTIONS = {
+    'Sun': 0.985556,
+    'Moon': 13.176389,
+    'Mercury': 1.383333,
+    'Venus': 1.2,
+    'Mars': 0.524167,
+    'Ceres': 0.211111,
+    'Jupiter': 0.083056,
+    'Saturn': 0.033611,
+    'Uranus': 0.011667,
+    'Neptune': 0.006667,
+    'Pluto': 0.004167,
+}
+
+STATION_SPEED = 0.0003      # ~1 second of movement
+
+# Movement & motion
+
+MOVEMENT_RETROGRADE = 'Retrograde'
+MOVEMENT_STATION = 'Station'
+MOVEMENT_DIRECT = 'Direct'
+
+MOTION_SLOW = 'Slow'
+MOTION_FAST = 'Fast'
