@@ -11,32 +11,21 @@
 
 """
 
+import math
 import re
 from decimal import Decimal
 
 
 FORMAT_TIME = 0
 FORMAT_DMS = 1
+FORMAT_LAT = 2
+FORMAT_LON = 3
 
 
 def dms_to_dec(dms: list) -> float:
     """ Returns the decimal conversion of a D:M:S list. """
     dec = sum([float(v) / 60**k for k, v in enumerate(dms[1:])])
     return dec if dms[0] == '+' else -dec
-
-
-def dms_to_string(dms: list, format: int = FORMAT_DMS) -> str:
-    """ Returns a D:M:S list as either a D:M:S or a D°M'S" string. """
-    if format == FORMAT_DMS:
-        symbols = [u'\N{DEGREE SIGN}', "'", '"']
-        string = ''.join(['%02d' % v + symbols[k] for k, v in enumerate(dms[1:])])
-    elif format == FORMAT_TIME:
-        string = ':'.join(['%02d' % v for v in dms[1:]])
-
-    if dms[0] == '-':
-        string = '-' + string
-
-    return string
 
 
 def dec_to_dms(dec: float) -> list[str | int]:
@@ -57,29 +46,50 @@ def dec_to_dms(dec: float) -> list[str | int]:
     return dms
 
 
+def dms_to_string(dms: list, format: int = FORMAT_DMS) -> str:
+    """ Returns a D:M:S list as either a D:M:S, D°M'S" or
+    coordinate string. """
+    if format == FORMAT_DMS or format == FORMAT_TIME:
+        if format == FORMAT_DMS:
+            symbols = [u'\N{DEGREE SIGN}', "'", '"']
+            string = ''.join(['%02d' % v + symbols[k] for k, v in enumerate(dms[1:])])
+        elif format == FORMAT_TIME:
+            string = ':'.join(['%02d' % v for v in dms[1:]])
+        if dms[0] == '-':
+            string = '-' + string
+    elif format == FORMAT_LAT or format == FORMAT_LON:
+        if format == FORMAT_LAT:
+            dir = 'S' if dms[0] == '-' else 'N'
+        elif format == FORMAT_LON:
+            dir = 'W' if dms[0] == '-' else 'E'
+        minutes = dms[2] + math.ceil(((dms[3]/60)*100))/100
+        string = f'{dms[1]}{dir}{minutes}'
+    else:
+        string = ''
+
+    return string
+
+
+def string_to_dms(string: str) -> list[str | int]:
+    """ Takes either a float, a float-as-string, a 12w34.56-type string,
+    or a 12°34'56.78" / 12:34:56.78-type string, and returns a float. """
+    try:
+        return float(string)
+    except ValueError:
+        digits = re.findall(r'[0-9\.-]+', string)
+        floats = [float(v) for v in digits]
+        char = string[len(digits[0])].upper()
+
+        if char in 'NESW':
+            return ['-' if char in 'SW' else '+'] + floats
+        else:
+            return ['-' if floats[0] < 0 else '+', abs(floats[0])] + floats[1:]
+
+
 def dec_to_string(dec: float, format: int = FORMAT_DMS) -> str:
     """ Returns a decimal float as either a D:M:S or a D°M'S" string. """
     return dms_to_string(dec_to_dms(dec), format)
 
 
-def coords_to_dec(lat, lon) -> tuple[float]:
-    """ Converts the passed values to decimal format if necessary. """
-    return (_coord_to_dec(v) for v in [lat, lon])
-
-
-def _coord_to_dec(coord) -> float:
-    """ Takes either a float, a float-as-string, a 12w34.56-type string,
-    or a 12°34'56.78" / 12:34:56.78-type string, and returns a float. """
-    try:
-        return float(coord)
-    except ValueError:
-        digits = re.findall(r'[0-9\.-]+', coord)
-        floats = [float(v) for v in digits]
-        char = coord[len(digits[0])].upper()
-
-        if char in 'NESW':
-            dms = ['-' if char in 'SW' else '+'] + floats
-        else:
-            dms = ['-' if floats[0] < 0 else '+', abs(floats[0])] + floats[1:]
-
-        return dms_to_dec(dms)
+def string_to_dec(string: str) -> str:
+    return dms_to_dec(string_to_dms(string))
