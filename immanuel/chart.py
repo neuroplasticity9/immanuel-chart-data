@@ -69,7 +69,7 @@ class Chart:
             lon, lat, dist, speed = ec_res[:4]
             dec = eq_res[1]
             house = self._get_house(lon)
-            self.planets[name.lower()] = Planet(name, house, lon, lat, dist, speed, dec)
+            self.planets[name] = Planet(name, house, lon, lat, dist, speed, dec)
 
 
     def asteroids(self, asteroids):

@@ -104,8 +104,7 @@ HOUSE_SYSTEMS = {
 
 # Astrological constants
 
-DEC_LOWER_BOUND = -23.45
-DEC_UPPER_BOUND = 23.45
+DECLINATION_BOUND = 23.45
 
 MEAN_MOTIONS = {
     'Sun': 0.985556,
@@ -125,19 +124,19 @@ STATION_SPEED = 0.0003      # ~1 second of movement
 
 # Movement & motion
 
-RETROGRADE = 'Retrograde'
-STATION = 'Station'
-DIRECT = 'Direct'
+RETROGRADE = 'retrograde'
+STATION = 'station'
+DIRECT = 'direct'
 
-SLOW = 'Slow'
-FAST = 'Fast'
+SLOW = 'slow'
+FAST = 'fast'
 
 # Main essential dignities
 
-DOMICILE = 'Domicile'
-EXALTED = 'Exalted'
-DETRIMENT = 'Detriment'
-FALL = 'Fall'
+DOMICILE = 'domicile'
+EXALTED = 'exalted'
+DETRIMENT = 'detriment'
+FALL = 'fall'
 
 ESSENTIAL_DIGNITIES = {
     SUN: {
