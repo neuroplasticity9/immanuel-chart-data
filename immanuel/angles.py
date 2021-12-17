@@ -74,7 +74,6 @@ class Angle(BaseAngle):
     value that should be in DD:MM:SS format, such as latitudes, longitudes,
     speed, declination, etc.
 
-
     """
 
     def __init__(self, angle: float):
