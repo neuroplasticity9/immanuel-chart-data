@@ -13,9 +13,10 @@
 from immanuel import position
 from immanuel.angles import Angle, SignAngle
 from immanuel.position import Movement, Motion, Dignity
+from immanuel.serializable import Serializable
 
 
-class Item:
+class Item(Serializable):
     def __init__(self, name, lon, speed):
         self.name = name
         self.sign = position.sign(lon)
