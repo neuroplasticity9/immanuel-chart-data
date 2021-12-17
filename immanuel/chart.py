@@ -1,10 +1,22 @@
+"""
+    This file is part of immanuel - (C) The Rift Lab
+    Author: Robert Davies (robert@theriftlab.com)
+
+
+    This module contains the main Chart class for producing chart data.
+
+    Given a localised date/time and lat/lon coordinates, this class
+    will gather all relevant data to create a chart, and is
+    fully serialisable for JSON output.
+
+"""
+
 from decimal import Decimal
 
 import swisseph as swe
 
 from immanuel import const, convert
-from immanuel.angle import Angle
-from immanuel.items import AxisPoint, House, Planet
+from immanuel.items import AxisAngle, House, Planet
 
 
 class Chart:
@@ -16,23 +28,23 @@ class Chart:
         self.aspects = {}   # TODO: default list
         self.orbs = {}      # TODO: default list
         self.houses = {}
-        self.axis = {}
+        self.angles = {}
         self.points = {}
         self.planets = {}
         self.asteroids = {}
         self.fixed_stars = {}
-        self._swe_axis = ()
+        self._swe_angles = ()
         self._houses()
-        self._axis()
+        self._angles()
         self._points()
         self._planets()
 
 
     def _houses(self):
-        """ This must be called before _axis() since pywisseph provides the
+        """ This must be called before _angles() since pywisseph provides the
         house cusps and axis point angles with the same function call. """
         cusps, ascmc, cuspsspeed, ascmcspeed = swe.houses_ex2(self.jd, self.lat, self.lon, self.hsys)
-        self._swe_axis = (ascmc, ascmcspeed)
+        self._swe_angles = (ascmc, ascmcspeed)
 
         for i, cusp in enumerate(cusps):
             house_number = i + 1
@@ -40,16 +52,16 @@ class Chart:
             self.houses[house_number] = House(house_number, cusp, size, cuspsspeed[i])
 
 
-    def _axis(self):
-        """ Get the main axis points from _swe_axis stored by _houses(). """
+    def _angles(self):
+        """ Get the main axis angles from _swe_angle stored by _houses(). """
         for name, swe_index in const.ANGLES.items():
-            lon = self._swe_axis[0][swe_index]
-            speed = self._swe_axis[1][swe_index]
+            lon = self._swe_angles[0][swe_index]
+            speed = self._swe_angles[1][swe_index]
 
             if name in [const.DESC, const.IC]:
                 lon = abs((lon - 180) % 360)
 
-            self.axis[name] = AxisPoint(name, lon, speed)
+            self.angles[name] = AxisAngle(name, lon, speed)
 
 
     def _points(self):

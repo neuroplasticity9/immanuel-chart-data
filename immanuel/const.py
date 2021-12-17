@@ -104,20 +104,19 @@ HOUSE_SYSTEMS = {
 
 # Astrological constants
 
-DECLINATION_BOUND = 23.45
+DECLINATION_BOUNDARY = 23.45
 
 MEAN_MOTIONS = {
-    'Sun': 0.985556,
-    'Moon': 13.176389,
-    'Mercury': 1.383333,
-    'Venus': 1.2,
-    'Mars': 0.524167,
-    'Ceres': 0.211111,
-    'Jupiter': 0.083056,
-    'Saturn': 0.033611,
-    'Uranus': 0.011667,
-    'Neptune': 0.006667,
-    'Pluto': 0.004167,
+    SUN: 0.985556,
+    MOON: 13.176389,
+    MERCURY: 1.383333,
+    VENUS: 1.2,
+    MARS: 0.524167,
+    JUPITER: 0.083056,
+    SATURN: 0.033611,
+    URANUS: 0.011667,
+    NEPTUNE: 0.006667,
+    PLUTO: 0.004167,
 }
 
 STATION_SPEED = 0.0003      # ~1 second of movement

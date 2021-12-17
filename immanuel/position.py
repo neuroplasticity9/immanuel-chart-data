@@ -3,7 +3,7 @@
     Author: Robert Davies (robert@theriftlab.com)
 
 
-    This module provides data for a planet's position.
+    This module provides data for a planet's position & speed.
 
     These classes provide simple serializable, stringable objects
     for various positional data such as movement, motion, and dignity,
@@ -11,76 +11,71 @@
 
 """
 
+from abc import ABC, abstractmethod
+
 from immanuel import const
+from immanuel.serializable import Serializable
 
 
-class PositionData(dict):
-    def __init__(self, data):
-        super().__init__(data)
+class PositionData(ABC, Serializable):
+    """ Base class simply allows a stringified version to return
+    whichever member is True.
+
+    """
 
     def __str__(self):
-        for k, v in self.items():
+        for k, v in self:
             if v:
                 return k.title()
-
         return 'None'
 
 
 class Movement(PositionData):
+    """ Stores whether the passed item is retrograde, stationed,
+    or direct. Stationed can still be in daily motion < 1 second.
+
+    """
+
     def __init__(self, speed):
-        movement = {
-            const.RETROGRADE: False,
-            const.STATION: False,
-            const.DIRECT: False,
-        }
-
-        if abs(speed) <= const.STATION_SPEED:
-            movement[const.STATION] = True
-        elif speed < -const.STATION_SPEED:
-            movement[const.RETROGRADE] = True
-        elif speed > const.STATION_SPEED:
-            movement[const.DIRECT] = True
-
-        super().__init__(movement)
+        self.__dict__.update({
+            const.RETROGRADE: speed < -const.STATION_SPEED,
+            const.STATION: abs(speed) <= const.STATION_SPEED,
+            const.DIRECT: speed > const.STATION_SPEED,
+        })
 
 
 class Motion(PositionData):
+    """ Stores whether the passed item is slow (below mean daily motion)
+    or fast (equal to or above mean daily motion).
+
+    """
+
     def __init__(self, speed, name):
-        motion = {
-            const.SLOW: False,
-            const.FAST: False,
-        }
-
-        if abs(speed) < const.MEAN_MOTIONS[name]:
-            motion[const.SLOW] = True
-        elif abs(speed) >= const.MEAN_MOTIONS[name]:
-            motion[const.FAST] = True
-
-        super().__init__(motion)
+        self.__dict__.update({
+            const.SLOW: abs(speed) < const.MEAN_MOTIONS[name],
+            const.FAST: abs(speed) >= const.MEAN_MOTIONS[name],
+        })
 
 
 class Dignity(PositionData):
+    """ Stores which of the four main essential dignities applies to the
+    passed item, if any.
+
+    """
     def __init__(self, sign, name):
-        dignity = {
-            const.DOMICILE: False,
-            const.EXALTED: False,
-            const.DETRIMENT: False,
-            const.FALL: False,
-        }
-
-        for dignity_type, dignity_sign in const.ESSENTIAL_DIGNITIES[name].items():
-            if isinstance(sign, tuple):
-                if sign in dignity_sign:
-                    dignity[dignity_type] = True
-            elif sign == dignity_sign:
-                dignity[dignity_type] = True
-
-        super().__init__(dignity)
+        self.__dict__.update({
+            const.DOMICILE: sign in const.ESSENTIAL_DIGNITIES[name]['domicile'],
+            const.EXALTED: sign == const.ESSENTIAL_DIGNITIES[name]['exalted'],
+            const.DETRIMENT: sign == const.ESSENTIAL_DIGNITIES[name]['detriment'],
+            const.FALL: sign == const.ESSENTIAL_DIGNITIES[name]['fall'],
+        })
 
 
-def sign(lon):
+def sign(lon: float) -> str:
+    """ Returns the zodiac sign the passed longitude belongs to. """
     return const.SIGNS[int(lon/30)]
 
 
-def is_out_of_bounds(dec):
-    return not -const.DECLINATION_BOUND < dec < const.DECLINATION_BOUND
+def is_out_of_bounds(dec: float) -> bool:
+    """ Returns whether the passed declination is out of bounds. """
+    return not -const.DECLINATION_BOUNDARY < dec < const.DECLINATION_BOUNDARY

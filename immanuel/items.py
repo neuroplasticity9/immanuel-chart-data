@@ -1,5 +1,17 @@
+"""
+    This file is part of immanuel - (C) The Rift Lab
+    Author: Robert Davies (robert@theriftlab.com)
+
+
+    This module provides clases for each chart item.
+
+    Planets, houses, axis angles, calculated points,
+    asteroids and fixed stars are encapsulated here.
+
+"""
+
 from immanuel import position
-from immanuel.angle import Angle, ChartAngle
+from immanuel.angles import Angle, SignAngle
 from immanuel.position import Movement, Motion, Dignity
 
 
@@ -7,14 +19,14 @@ class Item:
     def __init__(self, name, lon, speed):
         self.name = name
         self.sign = position.sign(lon)
-        self.longitude = ChartAngle(lon)
+        self.longitude = SignAngle(lon)
         self.speed = Angle(speed)
 
     def __str__(self):
         return f'{self.name} {self.sign} {self.longitude}'
 
 
-class AxisPoint(Item):
+class AxisAngle(Item):
     def __init__(self, name, lon, speed):
         super().__init__(name, lon, speed)
 
@@ -37,7 +49,29 @@ class Planet(Item):
         self.motion = Motion(speed, name)
         self.dignity = Dignity(self.sign, name)
         self.score = self._score()
+        # TODO: extras for moon
+        # void of course
+        # phase
+        # balsamic??
+
+    def __str__(self):
+        return f'{super().__str__()} house {self.house}'
 
     def _score(self):
         # TODO
         return 0
+
+
+class Point(Item):
+    def __init__(self, name, lon, speed):
+        super().__init__(name, lon, speed)
+
+
+class Asteroid(Item):
+    def __init__(self, name, lon, speed):
+        super().__init__(name, lon, speed)
+
+
+class FixedStar(Item):
+    def __init__(self, name, lon, speed):
+        super().__init__(name, lon, speed)
