@@ -12,15 +12,15 @@
 
 
 class Serializable:
-    """ Provides inheriting classes with the serialized() method to
+    """ Provides inheriting classes with the serialize() method to
     recursively serialize their public members (not beginning with '_')
     into a dict, and to iterate over the same data.
 
     """
 
-    def serialized(self) -> dict:
+    def serialize(self) -> dict:
         """ Returns a dict of all public members. """
-        return {k:v.serialized() if isinstance(v, Serializable) else v for k, v in self._public_items()}
+        return {k:v.serialize() if isinstance(v, Serializable) else v for k, v in self._public_items()}
 
     def _public_items(self) -> dict:
         """ Returns all members not starting with '_'. """
