@@ -56,7 +56,8 @@ class Planet(Item):
         # balsamic??
 
     def __str__(self):
-        return f'{super().__str__()} house {self.house}'
+        ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
+        return f'{super().__str__()} {self.house}{ordinal_suffix} house'
 
     def _score(self):
         # TODO
