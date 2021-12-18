@@ -57,7 +57,7 @@ class Planet(Item):
 
     def __str__(self):
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
-        return f'{super().__str__()} {self.house}{ordinal_suffix} house'
+        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house'
 
     def _score(self):
         # TODO
