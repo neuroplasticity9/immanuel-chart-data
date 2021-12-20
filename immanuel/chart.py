@@ -32,7 +32,7 @@ class Chart:
         self.planets = {}
         self.asteroids = {}
         self.fixed_stars = {}
-        self.aspects = {}
+        self.aspects = {v: [] for v in const.PLANETS.keys()}
 
         self._swe_angles = ()
         # self._aspects = {}   # TODO: default list
@@ -96,9 +96,7 @@ class Chart:
                 aspect = aspects.find(aspecting_item, aspected_item)
 
                 if aspect is not None:
-                    print(aspect)
-
-        return {}
+                    self.aspects[aspecting_item.name].append(aspect)
 
     def asteroids(self, asteroids):
         return {}

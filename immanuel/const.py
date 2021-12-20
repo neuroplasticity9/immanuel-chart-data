@@ -250,6 +250,7 @@ ASPECT_ORBS = {
 }
 
 DEFAULT_ORB: 1.0
+EXACT_ORB = 0.3
 
 ORBS = {
     SUN: ASPECT_ORBS,
@@ -263,6 +264,9 @@ ORBS = {
     NEPTUNE: ASPECT_ORBS,
     PLUTO: ASPECT_ORBS,
 }
+
+ACTIVE = 'active'
+PASSIVE = 'passive'
 
 ASSOCIATE = 'associate'
 DISSOCIATE = 'dissociate'

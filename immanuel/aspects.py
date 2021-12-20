@@ -19,11 +19,6 @@ from immanuel.items import Item, Planet
 from immanuel.serializable import Serializable, SerializableBoolean
 
 
-ALL = 0
-ACTIVE = 1
-PASSIVE = 2
-
-
 class Aspect(Serializable):
     """ Main class for encapsulating a chart aspect. This will specify
     which is the active and which is the passive partner in the aspect,
@@ -32,35 +27,65 @@ class Aspect(Serializable):
 
     """
 
-    def __init__(self, active: Item, passive: Item, aspect_type: str, orb: float):
-        self._active_item = active
-        self._passive_item = passive
-        self.active = active.name
-        self.passive = passive.name
+    def __init__(self, aspecting: Item, aspected: Item, aspect_type: str, orb: float):
+        self._aspecting_item = aspecting
+        self._aspected_item = aspected
+        self._distance = aspecting.distance_to(aspected)
+        self._aspect_angle = const.ASPECTS[aspect_type]
+        self.aspecting = aspecting.name
+        self.aspected = aspected.name
         self.type = aspect_type
         self.orb = Angle(orb)
+        self.role = self._role()
+        self.movement = self._movement()
         self.condition = self._condition()
+
+    def _role(self):
+        """ Determine whether the aspecting item is active or passive. """
+        active, passive = (self.aspecting, self.aspected) if self._aspecting_item.speed > self._aspected_item.speed else (self.aspected, self.aspecting)
+
+        role = SerializableBoolean()
+
+        role.data({
+            const.ACTIVE: self.aspecting == active,
+            const.PASSIVE: self.aspecting == passive,
+        })
+
+        return role
+
+    def _movement(self):
+        """ Determine if the active body is approaching, exactly on,
+        or leaving its aspect with the passive body.
+        """
+        aspect_exact_longitude = (self._aspected_item.longitude + (self._aspect_angle if self._distance >= 0 else -self._aspect_angle)) % 360
+        movement = SerializableBoolean()
+
+        movement.data({
+            const.SEPARATIVE: self._aspecting_item.longitude > aspect_exact_longitude + const.EXACT_ORB,
+            const.EXACT: aspect_exact_longitude - const.EXACT_ORB <= self._aspecting_item.longitude <= aspect_exact_longitude + const.EXACT_ORB,
+            const.APPLICATIVE: self._aspecting_item.longitude < aspect_exact_longitude - const.EXACT_ORB,
+        })
+
+        return movement
 
     def _condition(self):
         """ Determine if the orb pushes the aspected item out of sign. """
-        distance = self._active_item.distance_to(self._passive_item)
-        exact_longitude =  (self._active_item.longitude + (const.ASPECTS[self.type] if distance >= 0 else -const.ASPECTS[self.type])) % 360
-        exact_sign = position.sign(exact_longitude)
-        actual_sign = position.sign(self._passive_item.longitude)
+        aspect_exact_longitude = (self._aspecting_item.longitude + (self._aspect_angle if self._distance >= 0 else -self._aspect_angle)) % 360
+        associate = position.sign(aspect_exact_longitude) == position.sign(self._aspected_item.longitude)
         condition = SerializableBoolean()
 
         condition.data({
-            const.ASSOCIATE: exact_sign == actual_sign,
-            const.DISSOCIATE: exact_sign != actual_sign,
+            const.ASSOCIATE: associate,
+            const.DISSOCIATE: not associate,
         })
 
         return condition
 
     def __str__(self):
-        return f'{self.active} {self.type} {self.passive} within {self.orb} ({self.condition})'
+        return f'{self.aspecting} {self.type} {self.aspected} within {self.orb} ({self.role} / {self.movement} / {self.condition})'
 
 
-def find(aspecting: Item, aspected: Item, search: int = ACTIVE):
+def find(aspecting: Item, aspected: Item):
     """ Find an aspect between two active/passive chart item pairs.
     By default this will only return aspects where the item being
     checked ("aspecting") is the active partner.
@@ -68,13 +93,10 @@ def find(aspecting: Item, aspected: Item, search: int = ACTIVE):
     """
     for aspect_type in const.DEFAULT_ASPECTS:
         aspect_angle = const.ASPECTS[aspect_type]
-        orb = const.ORBS[aspecting.name][aspect_type]
+        orb = max(const.ORBS[aspecting.name][aspect_type], const.ORBS[aspected.name][aspect_type])
         distance = abs(aspecting.distance_to(aspected))
 
         if aspect_angle-orb <= distance <= aspect_angle+orb:
-            active, passive = (aspecting, aspected) if aspecting.speed > aspected.speed else (aspected, aspecting)
-
-            if (aspecting == active and search != PASSIVE) or (aspecting == passive and search != ACTIVE):
-                return Aspect(active, passive, aspect_type, abs(distance-aspect_angle))
+            return Aspect(aspecting, aspected, aspect_type, distance-aspect_angle)
 
     return None
