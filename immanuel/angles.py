@@ -38,11 +38,25 @@ class BaseAngle(ABC, Serializable):
         self.minutes = dms[2]
         self.seconds = dms[3]
 
+    def diff(self, other: BaseAngle) -> Angle:
+        """ Returns the shortest distance between two chart angles. """
+        diff = (other._full - self._full) % 360
+        return Angle(diff if diff <= 180 else diff - 360)
+
     def __add__(self, other: float | BaseAngle) -> float:
         return self._full + (other._full if isinstance(other, BaseAngle) else other)
 
     def __sub__(self, other: float | BaseAngle) -> float:
         return self._full - (other._full if isinstance(other, BaseAngle) else other)
+
+    def __truediv__(self, other: float | BaseAngle) -> float:
+        return self._full / (other._full if isinstance(other, BaseAngle) else other)
+
+    def __floordiv__(self, other: float | BaseAngle) -> int:
+        return self._full // (other._full if isinstance(other, BaseAngle) else other)
+
+    def __mod__(self, other: float | BaseAngle) -> int:
+        return self._full % (other._full if isinstance(other, BaseAngle) else other)
 
     def __lt__(self, other: float | BaseAngle) -> bool:
         return self._full < (other._full if isinstance(other, BaseAngle) else other)

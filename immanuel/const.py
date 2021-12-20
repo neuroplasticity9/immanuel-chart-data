@@ -199,3 +199,74 @@ ESSENTIAL_DIGNITIES = {
         FALL: PISCES,
     }
 }
+
+# Aspects & orbs
+
+CONJUNCTION = 'conjunction'
+OPPOSITION = 'opposition'
+SQUARE = 'square'
+TRINE = 'trine'
+SEXTILE = 'sextile'
+SEPTILE = 'septile'
+SEMISQUARE = 'semisquare'
+SESQUISQUARE = 'sesquisquare'
+SEMISEXTILE = 'semisextile'
+QUINCUNX = 'quincunx'
+QUINTILE = 'quintile'
+BIQUINTILE = 'biquintile'
+
+DEFAULT_ASPECTS = (
+    CONJUNCTION, OPPOSITION, SQUARE, TRINE, SEXTILE, QUINCUNX
+)
+
+ASPECTS = {
+    CONJUNCTION: 0.0,
+    OPPOSITION: 180.0,
+    SQUARE: 90.0,
+    TRINE: 120.0,
+    SEXTILE: 60.0,
+    SEPTILE: 51.43,
+    SEMISQUARE: 45.0,
+    SESQUISQUARE: 135.0,
+    SEMISEXTILE: 30.0,
+    QUINCUNX: 150.0,
+    QUINTILE: 72.0,
+    BIQUINTILE: 144.0,
+}
+
+ASPECT_ORBS = {
+    CONJUNCTION: 10.0,
+    OPPOSITION: 10.0,
+    SQUARE: 10.0,
+    TRINE: 10.0,
+    SEXTILE: 6.0,
+    SEPTILE: 3.0,
+    SEMISQUARE: 3.0,
+    SESQUISQUARE: 3.0,
+    SEMISEXTILE: 3.0,
+    QUINCUNX: 3.0,
+    QUINTILE: 2.0,
+    BIQUINTILE: 2.0,
+}
+
+DEFAULT_ORB: 1.0
+
+ORBS = {
+    SUN: ASPECT_ORBS,
+    MOON: ASPECT_ORBS,
+    MERCURY: ASPECT_ORBS,
+    VENUS: ASPECT_ORBS,
+    MARS: ASPECT_ORBS,
+    JUPITER: ASPECT_ORBS,
+    SATURN: ASPECT_ORBS,
+    URANUS: ASPECT_ORBS,
+    NEPTUNE: ASPECT_ORBS,
+    PLUTO: ASPECT_ORBS,
+}
+
+ASSOCIATE = 'associate'
+DISSOCIATE = 'dissociate'
+
+SEPARATIVE = 'separative'
+EXACT = 'exact'
+APPLICATIVE = 'applicative'

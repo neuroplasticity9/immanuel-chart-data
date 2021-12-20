@@ -10,6 +10,8 @@
 
 """
 
+from __future__ import annotations
+
 from immanuel import position
 from immanuel.angles import Angle, SignAngle
 from immanuel.position import Movement, Motion, Dignity
@@ -17,22 +19,41 @@ from immanuel.serializable import Serializable
 
 
 class Item(Serializable):
+    """ Generic chart item. Specific item types (planets, angles etc.)
+    inherit from this and add their own members & methods if necessary.
+
+    """
+
     def __init__(self, name, lon, speed):
         self.name = name
         self.sign = position.sign(lon)
         self.longitude = SignAngle(lon)
         self.speed = Angle(speed)
 
+    def distance_to(self, other: Item):
+        return self.longitude.diff(other.longitude)
+
+    def __eq__(self, other: Item):
+        """ Equality based on name. """
+        return self.name == other.name
+
+    def __ne__(self, other: Item):
+        """ Inequality based on name. """
+        return self.name != other.name
+
     def __str__(self):
+        """ Simple string representation. """
         return f'{self.name} {self.sign} {self.longitude}'
 
 
 class AxisAngle(Item):
+    """ Asc, Desc, MC & IC. """
     def __init__(self, name, lon, speed):
         super().__init__(name, lon, speed)
 
 
 class House(Item):
+    """ House position & size. """
     def __init__(self, number, cusp, size, speed):
         super().__init__(number, cusp, speed)
         self.size = size

@@ -30,3 +30,18 @@ class Serializable:
         """ Simple iterator for public members. """
         for item in self._public_items():
             yield item
+
+
+class SerializableBoolean(Serializable):
+    """ Simple extension allows a stringified version to return
+    whichever members are True, useful for objects that contain
+    only boolean members.
+
+    """
+
+    def data(self, data: dict):
+        """ Sets the object's members to the passed dict. """
+        self.__dict__.update(data)
+
+    def __str__(self):
+        return ', '.join((k.title() for k, v in self if v))
