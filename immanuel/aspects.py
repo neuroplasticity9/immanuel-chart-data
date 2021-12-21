@@ -15,7 +15,7 @@
 
 from immanuel import const, position
 from immanuel.angles import Angle
-from immanuel.items import Item, Planet
+from immanuel.items import Item
 from immanuel.serializable import Serializable, SerializableBoolean
 
 
@@ -74,11 +74,7 @@ class Aspect(Serializable):
 
 
 def find(aspecting: Item, aspected: Item):
-    """ Find an aspect between two active/passive chart item pairs.
-    By default this will only return aspects where the item being
-    checked ("aspecting") is the active partner.
-
-    """
+    """ Find an aspect between two chart item pairs. """
     for aspect_type in const.DEFAULT_ASPECTS:
         aspect_angle = const.ASPECTS[aspect_type]
         orb = max(const.ORBS[aspecting.name][aspect_type], const.ORBS[aspected.name][aspect_type])

@@ -40,7 +40,9 @@ class SerializableBoolean(Serializable):
     """
 
     def data(self, data: dict):
-        """ Sets the object's members to the passed dict. """
+        """ Sets the object's members to the passed dict and returns
+        self for easy instantioation with a dict.
+        """
         self.__dict__.update(data)
         return self
 
