@@ -40,14 +40,14 @@ class Aspect(Serializable):
         self.movement = self._movement()
         self.condition = self._condition()
 
-    def _role(self):
+    def _role(self) -> SerializableBoolean:
         """ Determine whether the aspecting item is active or passive. """
         return SerializableBoolean().data({
             const.ACTIVE: self._aspecting_item.speed > self._aspected_item.speed,
             const.PASSIVE: self._aspecting_item.speed < self._aspected_item.speed,
         })
 
-    def _movement(self):
+    def _movement(self) -> SerializableBoolean:
         """ Determine if the active body is approaching, exactly on,
         or leaving its aspect with the passive body.
         """
@@ -59,7 +59,7 @@ class Aspect(Serializable):
             const.APPLICATIVE: self._aspecting_item.longitude < aspect_exact_longitude - const.EXACT_ORB,
         })
 
-    def _condition(self):
+    def _condition(self) -> SerializableBoolean:
         """ Determine if the orb pushes the aspected item out of sign. """
         aspect_exact_longitude = (self._aspecting_item.longitude + (self.aspect if self.distance >= 0 else -self.aspect)) % 360
         associate = position.sign(aspect_exact_longitude) == position.sign(self._aspected_item.longitude)
@@ -69,11 +69,11 @@ class Aspect(Serializable):
             const.DISSOCIATE: not associate,
         })
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.aspecting} {self.aspected} {self.type.lower()} within {self.orb} ({self.role} / {self.movement} / {self.condition})'
 
 
-def find(aspecting: Item, aspected: Item):
+def find(aspecting: Item, aspected: Item) -> Aspect:
     """ Find an aspect between two chart item pairs. """
     for aspect_type in const.DEFAULT_ASPECTS:
         aspect_angle = const.ASPECTS[aspect_type]

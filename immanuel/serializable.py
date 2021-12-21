@@ -10,16 +10,28 @@
 
 """
 
-# TODO: make this abstract
-class SerializableBase:
-    def serialize(self) -> dict:
+from abc import ABC, abstractmethod
+
+
+class SerializableBase(ABC):
+    """ Serves as a standard base class for all serializable classes.
+    The idea is to have a standard, recursive method of serializing
+    class objects into dicts, or dicts/lists of dicts, suitable for
+    JSON output.
+    """
+
+    @abstractmethod
+    def serialize(self):
+        """ It is up to each child class's implementation what serialize()
+        will return, but it should be either a dict or a dict/list of dicts.
+        """
         pass
 
 
 class Serializable(SerializableBase):
-    """ Provides inheriting classes with the serialize() method to
-    recursively serialize their public members (not beginning with '_')
-    into a dict, and to iterate over the same data.
+    """ Provides inheriting classes with a serialize() implementation that
+    recursively serializes their public members (not beginning with '_')
+    into a dict, and an iterator for the same data.
 
     """
 
@@ -38,9 +50,9 @@ class Serializable(SerializableBase):
 
 
 class SerializableBoolean(Serializable):
-    """ Simple extension allows a stringified version to return
-    whichever members are True, useful for objects that contain
-    only boolean members.
+    """ Allows the inheriting objects' __str__() to return the names of
+    whichever members are True, useful for objects that contain only
+    boolean members.
 
     """
 
@@ -56,10 +68,12 @@ class SerializableBoolean(Serializable):
 
 
 class SerializableDict(SerializableBase, dict):
+    """ Allows a dict of Serializable objects to be serialized. """
     def serialize(self) -> dict:
         return {k: v.serialize() if isinstance(v, SerializableBase) else v for k, v in self.items()}
 
 
 class SerializableList(SerializableBase, list):
+    """ Allows a list of Serializable objects to be serialized. """
     def serialize(self) -> list:
         return [v.serialize() if isinstance(v, SerializableBase) else v for v in self]

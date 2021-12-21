@@ -31,18 +31,19 @@ class Item(Serializable):
         self.longitude = SignAngle(lon)
         self.speed = Angle(speed)
 
-    def distance_to(self, other: Item):
+    def distance_to(self, other: Item) -> Angle:
+        """ Chart angle distance between two chart items. """
         return self.longitude.diff(other.longitude)
 
-    def __eq__(self, other: Item):
+    def __eq__(self, other: Item) -> bool:
         """ Equality based on name. """
         return self.name == other.name
 
-    def __ne__(self, other: Item):
+    def __ne__(self, other: Item) -> bool:
         """ Inequality based on name. """
         return self.name != other.name
 
-    def __str__(self):
+    def __str__(self) -> str:
         """ Simple string representation. """
         return f'{self.name} {self.sign} {self.longitude}'
 
@@ -80,11 +81,11 @@ class Planet(Item):
         # phase
         # balsamic??
 
-    def __str__(self):
+    def __str__(self) -> str:
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
         return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house'
 
-    def _score(self):
+    def _score(self) -> int:
         # TODO
         return 0
 

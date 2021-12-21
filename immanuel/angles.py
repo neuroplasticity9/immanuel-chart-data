@@ -11,24 +11,23 @@
 """
 
 from __future__ import annotations
-from abc import ABC, abstractmethod
 from decimal import Decimal
 
 from immanuel import convert
 from immanuel.serializable import Serializable
 
 
-class BaseAngle(ABC, Serializable):
+class AngleBase(Serializable):
     """ Base class for taking care of common conversions between decimal
     angles and human-readable formats. Instances can be compared against
     floats or other instances. The _full member is left up to inheriting
-    classes to assign.
+    classes to assign. Although this is not an abstract class, it should
+    essentially be treated as one.
 
     """
 
     _full = 0
 
-    @abstractmethod
     def __init__(self, angle: float):
         """ Sets members common to all angles. """
         dms = convert.dec_to_dms(angle)
@@ -38,52 +37,52 @@ class BaseAngle(ABC, Serializable):
         self.minutes = dms[2]
         self.seconds = dms[3]
 
-    def diff(self, other: BaseAngle) -> Angle:
+    def diff(self, other: AngleBase) -> Angle:
         """ Returns the shortest distance between two chart angles. """
         diff = (other._full - self._full) % 360
         return Angle(diff if diff <= 180 else diff - 360)
 
-    def __add__(self, other: float | BaseAngle) -> float:
-        return self._full + (other._full if isinstance(other, BaseAngle) else other)
+    def __add__(self, other: float | AngleBase) -> float:
+        return self._full + (other._full if isinstance(other, AngleBase) else other)
 
-    def __sub__(self, other: float | BaseAngle) -> float:
-        return self._full - (other._full if isinstance(other, BaseAngle) else other)
+    def __sub__(self, other: float | AngleBase) -> float:
+        return self._full - (other._full if isinstance(other, AngleBase) else other)
 
-    def __truediv__(self, other: float | BaseAngle) -> float:
-        return self._full / (other._full if isinstance(other, BaseAngle) else other)
+    def __truediv__(self, other: float | AngleBase) -> float:
+        return self._full / (other._full if isinstance(other, AngleBase) else other)
 
-    def __floordiv__(self, other: float | BaseAngle) -> int:
-        return self._full // (other._full if isinstance(other, BaseAngle) else other)
+    def __floordiv__(self, other: float | AngleBase) -> int:
+        return self._full // (other._full if isinstance(other, AngleBase) else other)
 
-    def __mod__(self, other: float | BaseAngle) -> int:
-        return self._full % (other._full if isinstance(other, BaseAngle) else other)
+    def __mod__(self, other: float | AngleBase) -> int:
+        return self._full % (other._full if isinstance(other, AngleBase) else other)
 
-    def __lt__(self, other: float | BaseAngle) -> bool:
-        return self._full < (other._full if isinstance(other, BaseAngle) else other)
+    def __lt__(self, other: float | AngleBase) -> bool:
+        return self._full < (other._full if isinstance(other, AngleBase) else other)
 
-    def __le__(self, other: float | BaseAngle) -> bool:
-        return self._full <= (other._full if isinstance(other, BaseAngle) else other)
+    def __le__(self, other: float | AngleBase) -> bool:
+        return self._full <= (other._full if isinstance(other, AngleBase) else other)
 
-    def __eq__(self, other: float | BaseAngle) -> bool:
-        return self._full == (other._full if isinstance(other, BaseAngle) else other)
+    def __eq__(self, other: float | AngleBase) -> bool:
+        return self._full == (other._full if isinstance(other, AngleBase) else other)
 
-    def __ne__(self, other: float | BaseAngle) -> bool:
-        return self._full != (other._full if isinstance(other, BaseAngle) else other)
+    def __ne__(self, other: float | AngleBase) -> bool:
+        return self._full != (other._full if isinstance(other, AngleBase) else other)
 
-    def __gt__(self, other: float | BaseAngle) -> bool:
-        return self._full > (other._full if isinstance(other, BaseAngle) else other)
+    def __gt__(self, other: float | AngleBase) -> bool:
+        return self._full > (other._full if isinstance(other, AngleBase) else other)
 
-    def __ge__(self, other: float | BaseAngle) -> bool:
-        return self._full >= (other._full if isinstance(other, BaseAngle) else other)
+    def __ge__(self, other: float | AngleBase) -> bool:
+        return self._full >= (other._full if isinstance(other, AngleBase) else other)
 
-    def __abs__(self):
+    def __abs__(self) -> float:
         return abs(self._full)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return convert.dec_to_string(self.angle, convert.FORMAT_DMS)
 
 
-class Angle(BaseAngle):
+class Angle(AngleBase):
     """ Simple class for handling 0-359° values. This is useful for any
     value that should be in DD:MM:SS format, such as latitudes, longitudes,
     speed, declination, etc.
@@ -95,7 +94,7 @@ class Angle(BaseAngle):
         super().__init__(angle)
 
 
-class SignAngle(BaseAngle):
+class SignAngle(AngleBase):
     """ This class converts full ecliptic 0-359° longitudes to
     per-sign 0-29° longitudes. Comparisons are still based on the
     full ecliptic longitude (eg. 5° Taurus is > 20° Aries).
