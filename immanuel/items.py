@@ -12,7 +12,7 @@
 
 from __future__ import annotations
 
-from immanuel import position
+from immanuel import const, position
 from immanuel.angles import Angle, SignAngle
 from immanuel.position import Movement, Motion, Dignity
 from immanuel.serializable import Serializable
@@ -25,6 +25,7 @@ class Item(Serializable):
     """
 
     def __init__(self, name, lon, speed):
+        self.type = None
         self.name = name
         self.sign = position.sign(lon)
         self.longitude = SignAngle(lon)
@@ -50,18 +51,21 @@ class AxisAngle(Item):
     """ Asc, Desc, MC & IC. """
     def __init__(self, name, lon, speed):
         super().__init__(name, lon, speed)
+        self.type = const.ANGLE
 
 
 class House(Item):
     """ House position & size. """
     def __init__(self, number, cusp, size, speed):
         super().__init__(number, cusp, speed)
+        self.type = const.HOUSE
         self.size = size
 
 
 class Planet(Item):
     def __init__(self, name, house, lon, lat, dist, speed, dec):
         super().__init__(name, lon, speed)
+        self.type = const.PLANET
         self.house = house
         self.latitude = Angle(lat)
         self.declination = Angle(dec)
@@ -86,15 +90,21 @@ class Planet(Item):
 
 
 class Point(Item):
-    def __init__(self, name, lon, speed):
+    def __init__(self, name, house, lon, speed):
         super().__init__(name, lon, speed)
+        self.type = const.POINT
+        self.house = house
 
 
 class Asteroid(Item):
-    def __init__(self, name, lon, speed):
+    def __init__(self, name, house, lon, speed):
         super().__init__(name, lon, speed)
+        self.type = const.ASTEROID
+        self.house = house
 
 
 class FixedStar(Item):
-    def __init__(self, name, lon, speed):
+    def __init__(self, name, house, lon, speed):
         super().__init__(name, lon, speed)
+        self.type = const.FIXED_STAR
+        self.house = house

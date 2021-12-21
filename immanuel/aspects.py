@@ -30,11 +30,11 @@ class Aspect(Serializable):
     def __init__(self, aspecting: Item, aspected: Item, aspect_type: str, orb: float):
         self._aspecting_item = aspecting
         self._aspected_item = aspected
-        self._distance = aspecting.distance_to(aspected)
-        self._aspect_angle = const.ASPECTS[aspect_type]
         self.aspecting = aspecting.name
         self.aspected = aspected.name
         self.type = aspect_type
+        self.aspect = const.ASPECTS[aspect_type]
+        self.distance = aspecting.distance_to(aspected)
         self.orb = Angle(orb)
         self.role = self._role()
         self.movement = self._movement()
@@ -51,7 +51,7 @@ class Aspect(Serializable):
         """ Determine if the active body is approaching, exactly on,
         or leaving its aspect with the passive body.
         """
-        aspect_exact_longitude = (self._aspected_item.longitude + (self._aspect_angle if self._distance >= 0 else -self._aspect_angle)) % 360
+        aspect_exact_longitude = (self._aspected_item.longitude + (self.aspect if self.distance >= 0 else -self.aspect)) % 360
 
         return SerializableBoolean().data({
             const.SEPARATIVE: self._aspecting_item.longitude > aspect_exact_longitude + const.EXACT_ORB,
@@ -61,7 +61,7 @@ class Aspect(Serializable):
 
     def _condition(self):
         """ Determine if the orb pushes the aspected item out of sign. """
-        aspect_exact_longitude = (self._aspecting_item.longitude + (self._aspect_angle if self._distance >= 0 else -self._aspect_angle)) % 360
+        aspect_exact_longitude = (self._aspecting_item.longitude + (self.aspect if self.distance >= 0 else -self.aspect)) % 360
         associate = position.sign(aspect_exact_longitude) == position.sign(self._aspected_item.longitude)
 
         return SerializableBoolean().data({
@@ -70,7 +70,7 @@ class Aspect(Serializable):
         })
 
     def __str__(self):
-        return f'{self.aspecting} {self.type} {self.aspected} within {self.orb} ({self.role} / {self.movement} / {self.condition})'
+        return f'{self.aspecting} {self.aspected} {self.type.lower()} within {self.orb} ({self.role} / {self.movement} / {self.condition})'
 
 
 def find(aspecting: Item, aspected: Item):

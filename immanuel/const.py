@@ -10,6 +10,15 @@
 import swisseph as swe
 
 
+# Chart item types
+
+HOUSE = 'house'
+ANGLE = 'angle'
+POINT = 'point'
+PLANET = 'planet'
+ASTEROID = 'asteroid'
+FIXED_STAR = 'fixed star'
+
 # Signs
 
 ARIES = 'Aries'
@@ -29,46 +38,6 @@ SIGNS = (
     ARIES, TAURUS, GEMINI, CANCER, LEO, VIRGO, LIBRA,
     SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES
 )
-
-# Planets
-
-SUN = 'Sun'
-MOON = 'Moon'
-MERCURY = 'Mercury'
-VENUS = 'Venus'
-MARS = 'Mars'
-JUPITER = 'Jupiter'
-SATURN = 'Saturn'
-URANUS = 'Uranus'
-NEPTUNE = 'Neptune'
-PLUTO = 'Pluto'
-
-PLANETS = {
-    SUN: swe.SUN,
-    MOON: swe.MOON,
-    MERCURY: swe.MERCURY,
-    VENUS: swe.VENUS,
-    MARS: swe.MARS,
-    JUPITER: swe.JUPITER,
-    SATURN: swe.SATURN,
-    URANUS: swe.URANUS,
-    NEPTUNE: swe.NEPTUNE,
-    PLUTO: swe.PLUTO,
-}
-
-# Main angles
-
-ASC = 'Asc'
-DESC = 'Desc'
-MC = 'MC'
-IC = 'IC'
-
-ANGLES = {
-    ASC: swe.ASC,
-    DESC: swe.ASC,
-    MC: swe.MC,
-    IC: swe.MC,
-}
 
 # House systems
 
@@ -100,6 +69,76 @@ HOUSE_SYSTEMS = {
     REGIOMONTANUS: b'R',
     VEHLOW_EQUAL: b'V',
     WHOLE_SIGN: b'W',
+}
+
+# Main angles
+
+ASC = 'Asc'
+DESC = 'Desc'
+MC = 'MC'
+IC = 'IC'
+
+ANGLES = {
+    ASC: swe.ASC,
+    DESC: swe.ASC,
+    MC: swe.MC,
+    IC: swe.MC,
+}
+
+# Points
+
+NORTH_NODE = 'North Node'
+SOUTH_NODE = 'South Node'
+SYZYGY = 'Syzygy'
+PARS_FORTUNA = 'Pars Fortuna'
+VERTEX = 'Vertex'
+LILITH = 'Lilith'
+TRUE_LILITH = 'True Lilith'
+
+POINTS = {
+    NORTH_NODE: swe.MEAN_NODE,
+    # SYZYGY: swe.SYZYGY,
+    # PARS_FORTUNA: swe.PARS_FORTUNA,
+    VERTEX: swe.VERTEX,
+    LILITH: swe.MEAN_APOG,
+    TRUE_LILITH: swe.OSCU_APOG,
+}
+
+# Planets
+
+SUN = 'Sun'
+MOON = 'Moon'
+MERCURY = 'Mercury'
+VENUS = 'Venus'
+MARS = 'Mars'
+JUPITER = 'Jupiter'
+SATURN = 'Saturn'
+URANUS = 'Uranus'
+NEPTUNE = 'Neptune'
+PLUTO = 'Pluto'
+
+PLANETS = {
+    SUN: swe.SUN,
+    MOON: swe.MOON,
+    MERCURY: swe.MERCURY,
+    VENUS: swe.VENUS,
+    MARS: swe.MARS,
+    JUPITER: swe.JUPITER,
+    SATURN: swe.SATURN,
+    URANUS: swe.URANUS,
+    NEPTUNE: swe.NEPTUNE,
+    PLUTO: swe.PLUTO,
+}
+
+# Asteroids
+
+CHIRON = 'Chiron'
+CERES = 'Ceres'
+PALLAS = 'Pallas'
+JUNO = 'Juno'
+VESTA = 'Vesta'
+
+ASTEROIDS = {
 }
 
 # Astrological constants
@@ -202,18 +241,18 @@ ESSENTIAL_DIGNITIES = {
 
 # Aspects & orbs
 
-CONJUNCTION = 'conjunction'
-OPPOSITION = 'opposition'
-SQUARE = 'square'
-TRINE = 'trine'
-SEXTILE = 'sextile'
-SEPTILE = 'septile'
-SEMISQUARE = 'semisquare'
-SESQUISQUARE = 'sesquisquare'
-SEMISEXTILE = 'semisextile'
-QUINCUNX = 'quincunx'
-QUINTILE = 'quintile'
-BIQUINTILE = 'biquintile'
+CONJUNCTION = 'Conjunction'
+OPPOSITION = 'Opposition'
+SQUARE = 'Square'
+TRINE = 'Trine'
+SEXTILE = 'Sextile'
+SEPTILE = 'Septile'
+SEMISQUARE = 'Semisquare'
+SESQUISQUARE = 'Sesquisquare'
+SEMISEXTILE = 'Semisextile'
+QUINCUNX = 'Quincunx'
+QUINTILE = 'Quintile'
+BIQUINTILE = 'Biquintile'
 
 DEFAULT_ASPECTS = (
     CONJUNCTION, OPPOSITION, SQUARE, TRINE, SEXTILE, QUINCUNX

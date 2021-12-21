@@ -10,8 +10,13 @@
 
 """
 
+# TODO: make this abstract
+class SerializableBase:
+    def serialize(self) -> dict:
+        pass
 
-class Serializable:
+
+class Serializable(SerializableBase):
     """ Provides inheriting classes with the serialize() method to
     recursively serialize their public members (not beginning with '_')
     into a dict, and to iterate over the same data.
@@ -20,7 +25,7 @@ class Serializable:
 
     def serialize(self) -> dict:
         """ Returns a dict of all public members. """
-        return {k: v.serialize() if isinstance(v, Serializable) else v for k, v in self._public_items()}
+        return {k: v.serialize() if isinstance(v, SerializableBase) else v for k, v in self._public_items()}
 
     def _public_items(self) -> dict:
         """ Returns all members not starting with '_'. """
@@ -39,12 +44,22 @@ class SerializableBoolean(Serializable):
 
     """
 
-    def data(self, data: dict):
+    def data(self, data: dict) -> Serializable:
         """ Sets the object's members to the passed dict and returns
-        self for easy instantioation with a dict.
+        self for easy instantiation with a dict.
         """
         self.__dict__.update(data)
         return self
 
     def __str__(self):
         return ', '.join((k.title() for k, v in self if v))
+
+
+class SerializableDict(SerializableBase, dict):
+    def serialize(self) -> dict:
+        return {k: v.serialize() if isinstance(v, SerializableBase) else v for k, v in self.items()}
+
+
+class SerializableList(SerializableBase, list):
+    def serialize(self) -> list:
+        return [v.serialize() if isinstance(v, SerializableBase) else v for v in self]

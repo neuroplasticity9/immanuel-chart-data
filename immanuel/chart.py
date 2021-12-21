@@ -16,10 +16,11 @@ from decimal import Decimal
 import swisseph as swe
 
 from immanuel import aspects, const, convert
-from immanuel.items import AxisAngle, House, Planet
+from immanuel.items import AxisAngle, House, Planet, Point
+from immanuel.serializable import Serializable, SerializableDict, SerializableList
 
 
-class Chart:
+class Chart(Serializable):
     def __init__(self, dt, lat, lon, hsys, aspects = None, orbs = None, asteroids = None, fixed_stars = None):
         self._jd = dt.jd
         self._lat = lat
@@ -37,6 +38,8 @@ class Chart:
         # self._aspects = {}   # TODO: default list
         # self._orbs = {}      # TODO: default list
 
+        # TODO: serializable list
+
     def _get_swe_houses_angles(self):
         """ This must be called before _houses() and _angles(). """
         return swe.houses_ex2(self._jd, self._lat, self._lon, self._hsys)
@@ -51,7 +54,7 @@ class Chart:
             size = abs(float((Decimal(str(cusps[i+1 if i < 11 else 0])) - Decimal(str(cusp))) % 360))
             houses[house_number] = House(house_number, cusp, size, cuspsspeed[i])
 
-        return houses
+        return SerializableDict(houses)
 
     def _angles(self):
         """ Get the main axis angles from _swe_houses_angles. """
@@ -63,11 +66,11 @@ class Chart:
             speed = ascmcspeed[swe_index]
 
             if name in [const.DESC, const.IC]:
-                lon = abs((lon - 180) % 360)
+                lon = (lon - 180) % 360
 
             angles[name] = AxisAngle(name, lon, speed)
 
-        return angles
+        return SerializableDict(angles)
 
     def _points(self):
         # Nodes
@@ -75,7 +78,18 @@ class Chart:
         # Pars Fortuna
         # Liliths
         # Vertex
-        return {}
+        points = {}
+
+        ec_res, ec_flg = swe.calc_ut(self._jd, const.POINTS[const.NORTH_NODE])
+        lon, lat, dist, speed = ec_res[:4]
+        house = self._get_house(lon)
+        points[const.NORTH_NODE] = Point(const.NORTH_NODE, house, lon, speed)
+
+        lon = (lon - 180) % 360
+        house = self._get_house(lon)
+        points[const.SOUTH_NODE] = Point(const.SOUTH_NODE, house, lon, speed)
+
+        return SerializableDict(points)
 
     def _planets(self):
         """ Get the ten main planets. """
@@ -89,11 +103,11 @@ class Chart:
             house = self._get_house(lon)
             planets[name] = Planet(name, house, lon, lat, dist, speed, dec)
 
-        return planets
+        return SerializableDict(planets)
 
     def _aspects(self):
         """ Calculate all requested aspects between chart items. """
-        item_aspects = {v: [] for v in const.PLANETS.keys()}
+        item_aspects = {v: SerializableList([]) for v in const.PLANETS.keys()}
         aspect_items = self.planets
 
         for aspecting_name, aspecting_item in aspect_items.items():
@@ -106,7 +120,7 @@ class Chart:
                 if aspect is not None:
                     item_aspects[aspecting_item.name].append(aspect)
 
-        return item_aspects
+        return SerializableDict(item_aspects)
 
     def asteroids(self, asteroids):
         return {}
