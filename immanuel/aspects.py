@@ -42,7 +42,7 @@ class Aspect(Serializable):
 
     def _role(self) -> SerializableBoolean:
         """ Determine whether the aspecting item is active or passive. """
-        return SerializableBoolean().data({
+        return SerializableBoolean({
             const.ACTIVE: self._aspecting_item.speed > self._aspected_item.speed,
             const.PASSIVE: self._aspecting_item.speed < self._aspected_item.speed,
         })
@@ -53,7 +53,7 @@ class Aspect(Serializable):
         """
         aspect_exact_longitude = (self._aspected_item.longitude + (self.aspect if self.distance >= 0 else -self.aspect)) % 360
 
-        return SerializableBoolean().data({
+        return SerializableBoolean({
             const.SEPARATIVE: self._aspecting_item.longitude > aspect_exact_longitude + const.EXACT_ORB,
             const.EXACT: aspect_exact_longitude - const.EXACT_ORB <= self._aspecting_item.longitude <= aspect_exact_longitude + const.EXACT_ORB,
             const.APPLICATIVE: self._aspecting_item.longitude < aspect_exact_longitude - const.EXACT_ORB,
@@ -64,7 +64,7 @@ class Aspect(Serializable):
         aspect_exact_longitude = (self._aspecting_item.longitude + (self.aspect if self.distance >= 0 else -self.aspect)) % 360
         associate = position.sign(aspect_exact_longitude) == position.sign(self._aspected_item.longitude)
 
-        return SerializableBoolean().data({
+        return SerializableBoolean({
             const.ASSOCIATE: associate,
             const.DISSOCIATE: not associate,
         })

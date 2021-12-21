@@ -3,7 +3,7 @@
     Author: Robert Davies (robert@theriftlab.com)
 
 
-    This module provides data for a planet's position & speed.
+    This module provides data for an individual item's position & speed.
 
     These classes provide simple serializable, stringable objects
     for various positional data such as movement, motion, and dignity,

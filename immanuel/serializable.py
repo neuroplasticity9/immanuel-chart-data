@@ -3,10 +3,13 @@
     Author: Robert Davies (robert@theriftlab.com)
 
 
-    This module provides a base class for easily-serializable objects.
+    This module provides base classes for easily-serializable objects.
 
     Objects inheriting from the Serializable class can be turned into dicts.
     These objects are also iterable, using the same public members.
+    SerializableDict and SerializableList are designed to be standard
+    dicts and lists but capable of recurively serializing any members
+    which are serializable.
 
 """
 
@@ -43,7 +46,7 @@ class Serializable(SerializableBase):
         """ Returns all members not starting with '_'. """
         return {k: v for k, v in self.__dict__.items() if k[0] != '_'}.items()
 
-    def __iter__(self):
+    def __iter__(self) -> iter:
         """ Simple iterator for public members. """
         for item in self._public_items():
             yield item
@@ -56,6 +59,9 @@ class SerializableBoolean(Serializable):
 
     """
 
+    def __init__(self, data: dict = {}):
+        self.__dict__.update(data)
+
     def data(self, data: dict) -> Serializable:
         """ Sets the object's members to the passed dict and returns
         self for easy instantiation with a dict.
@@ -63,7 +69,7 @@ class SerializableBoolean(Serializable):
         self.__dict__.update(data)
         return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         return ', '.join((k.title() for k, v in self if v))
 
 
