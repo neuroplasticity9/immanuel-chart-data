@@ -42,6 +42,7 @@ class SerializableBoolean(Serializable):
     def data(self, data: dict):
         """ Sets the object's members to the passed dict. """
         self.__dict__.update(data)
+        return self
 
     def __str__(self):
         return ', '.join((k.title() for k, v in self if v))

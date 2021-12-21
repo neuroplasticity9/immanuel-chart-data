@@ -42,44 +42,32 @@ class Aspect(Serializable):
 
     def _role(self):
         """ Determine whether the aspecting item is active or passive. """
-        active, passive = (self.aspecting, self.aspected) if self._aspecting_item.speed > self._aspected_item.speed else (self.aspected, self.aspecting)
-
-        role = SerializableBoolean()
-
-        role.data({
-            const.ACTIVE: self.aspecting == active,
-            const.PASSIVE: self.aspecting == passive,
+        return SerializableBoolean().data({
+            const.ACTIVE: self._aspecting_item.speed > self._aspected_item.speed,
+            const.PASSIVE: self._aspecting_item.speed < self._aspected_item.speed,
         })
-
-        return role
 
     def _movement(self):
         """ Determine if the active body is approaching, exactly on,
         or leaving its aspect with the passive body.
         """
         aspect_exact_longitude = (self._aspected_item.longitude + (self._aspect_angle if self._distance >= 0 else -self._aspect_angle)) % 360
-        movement = SerializableBoolean()
 
-        movement.data({
+        return SerializableBoolean().data({
             const.SEPARATIVE: self._aspecting_item.longitude > aspect_exact_longitude + const.EXACT_ORB,
             const.EXACT: aspect_exact_longitude - const.EXACT_ORB <= self._aspecting_item.longitude <= aspect_exact_longitude + const.EXACT_ORB,
             const.APPLICATIVE: self._aspecting_item.longitude < aspect_exact_longitude - const.EXACT_ORB,
         })
 
-        return movement
-
     def _condition(self):
         """ Determine if the orb pushes the aspected item out of sign. """
         aspect_exact_longitude = (self._aspecting_item.longitude + (self._aspect_angle if self._distance >= 0 else -self._aspect_angle)) % 360
         associate = position.sign(aspect_exact_longitude) == position.sign(self._aspected_item.longitude)
-        condition = SerializableBoolean()
 
-        condition.data({
+        return SerializableBoolean().data({
             const.ASSOCIATE: associate,
             const.DISSOCIATE: not associate,
         })
-
-        return condition
 
     def __str__(self):
         return f'{self.aspecting} {self.type} {self.aspected} within {self.orb} ({self.role} / {self.movement} / {self.condition})'
