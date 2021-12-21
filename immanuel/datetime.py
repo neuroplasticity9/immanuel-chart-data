@@ -29,33 +29,43 @@ class DateTime:
     """
 
     def __init__(self, dt: datetime, lat: float, lon: float, is_dst = None):
-        self.dt = dt
-        self.lat = lat
-        self.lon = lon
-        self.is_dst = is_dst
+        self._dt = dt
+        self._lat = lat
+        self._lon = lon
+        self._is_dst = is_dst
         self.dst_ambiguous = False
         self.timezone = self._timezone()
         self.offset = self._offset()
         self.jd = None if self.offset is None else self._jd()
 
+    @staticmethod
+    def from_jd(jd: float, lat: float, lon: float, is_dst = None):
+        utc = swe.jdut1_to_utc(jd)
+        seconds_float = utc[5]
+        seconds = int(seconds_float)
+        microseconds = round((seconds_float - seconds) * 1000)
+        dt_utc = utc[:5] + (seconds, microseconds)
+        dt = datetime(*dt_utc)
+        return DateTime(dt, lat, lon)
+
     def _timezone(self) -> str:
         """ Returns the timezone's name. """
-        return TimezoneFinder().certain_timezone_at(lat=self.lat, lng=self.lon)
+        return TimezoneFinder().certain_timezone_at(lat=self._lat, lng=self._lon)
 
     def _offset(self) -> float:
         """ Returns the timezone's offset after DST ambiguity check. """
         tz = timezone(self.timezone)
 
         try:
-            dt_local = tz.localize(self.dt, self.is_dst)
+            dt_local = tz.localize(self._dt, self._is_dst)
         except exceptions.AmbiguousTimeError:
             self.dst_ambiguous = True
             return None
 
-        dt_utc = utc.localize(self.dt)
+        dt_utc = utc.localize(self._dt)
         return (dt_utc - dt_local).total_seconds() / 3600
 
     def _jd(self) -> float:
         """ Returns the Julian date. """
-        hour = convert.dms_to_dec(['+', self.dt.hour-self.offset, self.dt.minute, self.dt.second])
-        return swe.julday(self.dt.year, self.dt.month, self.dt.day, hour)
+        hour = convert.dms_to_dec(['+', self._dt.hour-self.offset, self._dt.minute, self._dt.second])
+        return swe.julday(self._dt.year, self._dt.month, self._dt.day, hour)
