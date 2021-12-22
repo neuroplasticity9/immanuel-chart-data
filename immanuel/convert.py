@@ -51,7 +51,7 @@ def dms_to_string(dms: list, format: int = FORMAT_DMS) -> str:
     coordinate string. """
     if format == FORMAT_DMS or format == FORMAT_TIME:
         if format == FORMAT_DMS:
-            symbols = [u'\N{DEGREE SIGN}', "'", '"']
+            symbols = (u'\N{DEGREE SIGN}', "'", '"')
             string = ''.join(['%02d' % v + symbols[k] for k, v in enumerate(dms[1:])])
         elif format == FORMAT_TIME:
             string = ':'.join(['%02d' % v for v in dms[1:]])
