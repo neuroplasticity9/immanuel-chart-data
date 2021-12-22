@@ -69,3 +69,6 @@ class DateTime:
         """ Returns the Julian date. """
         hour = convert.dms_to_dec(['+', self._dt.hour-self.offset, self._dt.minute, self._dt.second])
         return swe.julday(self._dt.year, self._dt.month, self._dt.day, hour)
+
+    def __str__(self):
+        return f'{self._dt.strftime("%c")} {self.timezone}'
