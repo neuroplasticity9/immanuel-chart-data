@@ -64,7 +64,7 @@ def previous_new_moon(jd: float):
     sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
     moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
     distance = swe.difdegn(moon_lon, sun_lon)
-    jd -= math.floor(distance) / math.floor(const.MEAN_MOTIONS[const.MOON])
+    jd -= math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
     return _find(const.SUN, const.MOON, const.CONJUNCTION, jd, PREVIOUS)
 
 
@@ -74,5 +74,5 @@ def previous_full_moon(jd: float):
     moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
     distance = swe.difdegn(moon_lon, sun_lon)
     distance += 180 if distance < 180 else -180
-    jd -= math.floor(distance) / math.floor(const.MEAN_MOTIONS[const.MOON])
+    jd -= math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
     return _find(const.SUN, const.MOON, const.OPPOSITION, jd, PREVIOUS)
