@@ -14,8 +14,8 @@ import swisseph as swe
 
 HOUSE = 'house'
 ANGLE = 'angle'
-POINT = 'point'
 PLANET = 'planet'
+POINT = 'point'
 ASTEROID = 'asteroid'
 FIXED_STAR = 'fixed star'
 
@@ -85,25 +85,6 @@ ANGLES = {
     IC: swe.MC,
 }
 
-# Points
-
-NORTH_NODE = 'North Node'
-SOUTH_NODE = 'South Node'
-SYZYGY = 'Syzygy'
-PARS_FORTUNA = 'Pars Fortuna'
-VERTEX = 'Vertex'
-LILITH = 'Lilith'
-TRUE_LILITH = 'True Lilith'
-
-POINTS = {
-    NORTH_NODE: swe.MEAN_NODE,
-    # SYZYGY: swe.SYZYGY,
-    # PARS_FORTUNA: swe.PARS_FORTUNA,
-    VERTEX: swe.VERTEX,
-    LILITH: swe.MEAN_APOG,
-    TRUE_LILITH: swe.OSCU_APOG,
-}
-
 # Planets
 
 SUN = 'Sun'
@@ -130,6 +111,25 @@ PLANETS = {
     PLUTO: swe.PLUTO,
 }
 
+# Points
+
+NORTH_NODE = 'North Node'
+SOUTH_NODE = 'South Node'
+SYZYGY = 'Syzygy'
+PARS_FORTUNA = 'Pars Fortuna'
+VERTEX = 'Vertex'
+LILITH = 'Lilith'
+TRUE_LILITH = 'True Lilith'
+
+POINTS = {
+    NORTH_NODE: swe.MEAN_NODE,
+    # SYZYGY: swe.SYZYGY,
+    # PARS_FORTUNA: swe.PARS_FORTUNA,
+    VERTEX: swe.VERTEX,
+    LILITH: swe.MEAN_APOG,
+    TRUE_LILITH: swe.OSCU_APOG,
+}
+
 # Asteroids
 
 CHIRON = 'Chiron'
@@ -139,6 +139,15 @@ JUNO = 'Juno'
 VESTA = 'Vesta'
 
 ASTEROIDS = {
+}
+
+# All items
+
+CHART_ITEMS = {
+    **ANGLES,
+    **PLANETS,
+    **POINTS,
+    **ASTEROIDS,
 }
 
 # Astrological constants

@@ -12,10 +12,11 @@
 """
 
 from decimal import Decimal
+from operator import itemgetter
 
 import swisseph as swe
 
-from immanuel import aspects, const, convert
+from immanuel import aspects, const, convert, transits
 from immanuel.items import AxisAngle, House, Planet, Point
 from immanuel.serializable import Serializable, SerializableDict, SerializableList
 
@@ -30,8 +31,8 @@ class Chart(Serializable):
 
         self.houses = self._houses()
         self.angles = self._angles()
-        self.points = self._points()
         self.planets = self._planets()
+        self.points = self._points()
         self.asteroids = {}
         self.fixed_stars = {}
         self.aspects = self._aspects()
@@ -42,24 +43,24 @@ class Chart(Serializable):
 
     def _get_swe_houses_angles(self):
         """ This must be called before _houses() and _angles(). """
-        return swe.houses_ex2(self._jd, self._lat, self._lon, self._hsys)
+        return dict(zip(('cusps', 'ascmc', 'cuspsspeed', 'ascmcspeed'), swe.houses_ex2(self._jd, self._lat, self._lon, self._hsys)))
 
     def _houses(self):
         """ Get the house cusps from _swe_houses_angles. """
-        houses = {}
-        cusps, ascmc, cuspsspeed, ascmcspeed = self._swe_houses_angles
+        houses = SerializableDict()
+        cusps, cuspsspeed = itemgetter('cusps', 'cuspsspeed')(self._swe_houses_angles)
 
         for i, cusp in enumerate(cusps):
             house_number = i + 1
             size = abs(float((Decimal(str(cusps[i+1 if i < 11 else 0])) - Decimal(str(cusp))) % 360))
             houses[house_number] = House(house_number, cusp, size, cuspsspeed[i])
 
-        return SerializableDict(houses)
+        return houses
 
     def _angles(self):
         """ Get the main axis angles from _swe_houses_angles. """
-        angles = {}
-        cusps, ascmc, cuspsspeed, ascmcspeed = self._swe_houses_angles
+        angles = SerializableDict()
+        ascmc, ascmcspeed = itemgetter('ascmc', 'ascmcspeed')(self._swe_houses_angles)
 
         for name, swe_index in const.ANGLES.items():
             lon = ascmc[swe_index]
@@ -70,30 +71,11 @@ class Chart(Serializable):
 
             angles[name] = AxisAngle(name, lon, speed)
 
-        return SerializableDict(angles)
-
-    def _points(self):
-        # Nodes
-        # Syzygy
-        # Pars Fortuna
-        # Liliths
-        # Vertex
-        points = {}
-
-        ec_res, ec_flg = swe.calc_ut(self._jd, const.POINTS[const.NORTH_NODE])
-        lon, lat, dist, speed = ec_res[:4]
-        house = self._get_house(lon)
-        points[const.NORTH_NODE] = Point(const.NORTH_NODE, house, lon, speed)
-
-        lon = (lon - 180) % 360
-        house = self._get_house(lon)
-        points[const.SOUTH_NODE] = Point(const.SOUTH_NODE, house, lon, speed)
-
-        return SerializableDict(points)
+        return angles
 
     def _planets(self):
         """ Get the ten main planets. """
-        planets = {}
+        planets = SerializableDict()
 
         for name, planet in const.PLANETS.items():
             ec_res, ec_flg = swe.calc_ut(self._jd, planet)
@@ -103,11 +85,53 @@ class Chart(Serializable):
             house = self._get_house(lon)
             planets[name] = Planet(name, house, lon, lat, dist, speed, dec)
 
-        return SerializableDict(planets)
+        return planets
+
+    def _points(self):
+            # Nodes
+            # Syzygy
+        # Pars Fortuna
+        # Liliths
+            # Vertex
+        """ Get the main calculated points. """
+        points = SerializableDict()
+
+        """ Get the nodes. """
+        res, flg = swe.calc_ut(self._jd, const.POINTS[const.NORTH_NODE])
+        lon, lat, dist, speed = res[:4]
+        house = self._get_house(lon)
+        points[const.NORTH_NODE] = Point(const.NORTH_NODE, house, lon, speed)
+
+        lon = (lon - 180) % 360
+        house = self._get_house(lon)
+        points[const.SOUTH_NODE] = Point(const.SOUTH_NODE, house, lon, speed)
+
+        """ Get the vertex. """
+        ascmc, ascmcspeed = itemgetter('ascmc', 'ascmcspeed')(self._swe_houses_angles)
+        lon = ascmc[const.POINTS[const.VERTEX]]
+        speed = ascmcspeed[const.POINTS[const.VERTEX]]
+        house = self._get_house(lon)
+        points[const.VERTEX] = Point(const.VERTEX, house, lon, speed)
+
+        """ Get the latest pre-natal full/new moon. """
+        distance = self.planets[const.SUN].distance_to(self.planets[const.MOON])
+        jd = transits.previous_new_moon(self._jd) if distance > 0 else transits.previous_full_moon(self._jd)
+        res, flg = swe.calc_ut(jd, const.PLANETS[const.MOON])
+        lon, lat, dist, speed = res[:4]
+        house = self._get_house(lon)
+        points[const.SYZYGY] = Point(const.SYZYGY, house, lon, speed)
+
+        return points
+
+    def asteroids(self, asteroids):
+        return {}
+
+    def fixed_stars(self, fixed_stars):
+        return {}
 
     def _aspects(self):
         """ Calculate all requested aspects between chart items. """
-        item_aspects = {v: SerializableList([]) for v in const.PLANETS.keys()}
+        item_aspects = SerializableDict({v: SerializableList([]) for v in const.PLANETS.keys()})
         aspect_items = self.planets
 
         for aspecting_name, aspecting_item in aspect_items.items():
@@ -120,13 +144,7 @@ class Chart(Serializable):
                 if aspect is not None:
                     item_aspects[aspecting_item.name].append(aspect)
 
-        return SerializableDict(item_aspects)
-
-    def asteroids(self, asteroids):
-        return {}
-
-    def fixed_stars(self, fixed_stars):
-        return {}
+        return item_aspects
 
     def _get_house(self, lon):
         for house in self.houses.values():
