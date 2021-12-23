@@ -32,10 +32,7 @@ class AngleBase(Serializable):
         """ Sets members common to all angles. """
         dms = convert.dec_to_dms(angle)
         self.angle = angle
-        self.direction = dms[0]
-        self.degrees = dms[1]
-        self.minutes = dms[2]
-        self.seconds = dms[3]
+        self.direction, self.degrees, self.minutes, self.seconds = dms
 
     def diff(self, other: AngleBase) -> Angle:
         """ Returns the shortest distance between two chart angles. """
@@ -45,8 +42,14 @@ class AngleBase(Serializable):
     def __add__(self, other: float | AngleBase) -> float:
         return self._full + (other._full if isinstance(other, AngleBase) else other)
 
+    def __radd__(self, other: float | AngleBase) -> float:
+        return (other._full if isinstance(other, AngleBase) else other) + self._full
+
     def __sub__(self, other: float | AngleBase) -> float:
         return self._full - (other._full if isinstance(other, AngleBase) else other)
+
+    def __rsub__(self, other: float | AngleBase) -> float:
+        return (other._full if isinstance(other, AngleBase) else other) - self._full
 
     def __truediv__(self, other: float | AngleBase) -> float:
         return self._full / (other._full if isinstance(other, AngleBase) else other)
@@ -77,6 +80,12 @@ class AngleBase(Serializable):
 
     def __abs__(self) -> float:
         return abs(self._full)
+
+    def __int__(self) -> int:
+        return int(self.full)
+
+    def __float__(self) -> float:
+        return self.full
 
     def __str__(self) -> str:
         return convert.dec_to_string(self.angle, convert.FORMAT_DMS)
