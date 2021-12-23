@@ -59,7 +59,7 @@ def _find(first: str, second: str, aspect: str, jd: float, direction: int) -> fl
         jd += step
 
 
-def previous_new_moon(jd: float):
+def previous_new_moon(jd: float) -> float:
     """ Fast rewind to approximate conjunction. """
     sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
     moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
@@ -68,7 +68,7 @@ def previous_new_moon(jd: float):
     return _find(const.SUN, const.MOON, const.CONJUNCTION, jd, PREVIOUS)
 
 
-def previous_full_moon(jd: float):
+def previous_full_moon(jd: float) -> float:
     """ Fast rewind to approximate opposition. """
     sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
     moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
