@@ -183,6 +183,7 @@ class Chart(Serializable):
             pl = extra_asteroid + swe.AST_OFFSET
             name = swe.get_planet_name(pl)
             asteroid_list[name] = pl
+            self._show_items.append(name)
 
         for name, asteroid in asteroid_list.items():
             res, _ = swe.calc_ut(self._jd, asteroid)
@@ -197,8 +198,8 @@ class Chart(Serializable):
 
     def _aspects(self) -> SerializableDict:
         """ Calculate all requested aspects between chart items. """
-        item_aspects = SerializableDict({v: SerializableList([]) for v in const.CHART_ITEMS.keys()})
-        aspect_items = {**self.angles, **self.planets, **self.points}
+        item_aspects = SerializableDict({v: SerializableList([]) for v in self._show_items})
+        aspect_items = {**self.angles, **self.planets, **self.points, **self.asteroids}
 
         for aspecting_name, aspecting_item in aspect_items.items():
             for aspected_name, aspected_item in aspect_items.items():
@@ -207,7 +208,9 @@ class Chart(Serializable):
 
                 for aspect_type in self._show_aspects:
                     aspect_angle = const.ASPECTS[aspect_type]
-                    orb = max(self._show_orbs[aspecting_name][aspect_type], self._show_orbs[aspected_name][aspect_type])
+                    aspecting_orb = self._show_orbs[aspecting_name][aspect_type] if aspecting_name in self._show_orbs else const.DEFAULT_ORB
+                    aspected_orb = self._show_orbs[aspected_name][aspect_type] if aspected_name in self._show_orbs else const.DEFAULT_ORB
+                    orb = max(aspecting_orb, aspected_orb)
                     distance = abs(aspecting_item.distance_to(aspected_item))
 
                     if aspect_angle-orb <= distance <= aspect_angle+orb:
@@ -217,7 +220,7 @@ class Chart(Serializable):
         return item_aspects
 
     def _get_house(self, lon) -> int:
-        """ Return which house a given longitude appears in. """
+        """ Returns which house a given longitude appears in. """
         for house in self.houses.values():
             if house.longitude <= lon < house.longitude + house.size:
                 return house.name

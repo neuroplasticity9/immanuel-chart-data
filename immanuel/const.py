@@ -125,7 +125,7 @@ TRUE_SOUTH_NODE = 'True South Node'
 SYZYGY = 'Syzygy'
 PARS_FORTUNA = 'Pars Fortuna'
 VERTEX = 'Vertex'
-LILITH = 'Lilith'
+LILITH = 'Dark Moon Lilith'             # Avoid key clashes with asteroid Lilith
 TRUE_LILITH = 'True Lilith'
 
 POINTS = {
@@ -160,12 +160,12 @@ ASTEROIDS = {
 
 # Default items
 
-DEFAULT_ITEMS = (
+DEFAULT_ITEMS = [
     ASC, DESC, MC, IC,
     SUN, MOON, MERCURY, VENUS, MARS, JUPITER, SATURN, URANUS, NEPTUNE, PLUTO,
     NORTH_NODE, SOUTH_NODE, PARS_FORTUNA, VERTEX,
     CHIRON
-)
+]
 
 # All items
 
@@ -353,7 +353,7 @@ POINT_ORBS = {
     BIQUINTILE: 0.0,
 }
 
-DEFAULT_ORB: 1.0
+DEFAULT_ORB = 1.0
 EXACT_ORB = 0.3
 
 DEFAULT_ORBS = {
