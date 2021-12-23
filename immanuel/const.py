@@ -143,12 +143,19 @@ POINTS = {
 # Asteroids
 
 CHIRON = 'Chiron'
+PHOLUS = 'Pholus'
 CERES = 'Ceres'
 PALLAS = 'Pallas'
 JUNO = 'Juno'
 VESTA = 'Vesta'
 
 ASTEROIDS = {
+    CHIRON: swe.CHIRON,
+    PHOLUS: swe.PHOLUS,
+    CERES: swe.CERES,
+    PALLAS: swe.PALLAS,
+    JUNO: swe.JUNO,
+    VESTA: swe.VESTA,
 }
 
 # Default items
@@ -157,7 +164,7 @@ DEFAULT_ITEMS = (
     ASC, DESC, MC, IC,
     SUN, MOON, MERCURY, VENUS, MARS, JUPITER, SATURN, URANUS, NEPTUNE, PLUTO,
     NORTH_NODE, SOUTH_NODE, PARS_FORTUNA, VERTEX,
-    CHIRON,
+    CHIRON
 )
 
 # All items

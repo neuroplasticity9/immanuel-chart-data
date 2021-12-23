@@ -19,7 +19,7 @@ import swisseph as swe
 
 from immanuel import const, convert, transits
 from immanuel.aspects import Aspect
-from immanuel.items import AxisAngle, House, Planet, Point
+from immanuel.items import AxisAngle, House, Planet, Point, Asteroid
 from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict, SerializableList
 
 
@@ -32,6 +32,7 @@ class Chart(Serializable):
         self._show_items = kwargs.get('custom_items', const.DEFAULT_ITEMS)
         self._show_aspects = kwargs.get('custom_aspects', const.DEFAULT_ASPECTS)
         self._show_orbs = kwargs.get('custom_orbs', const.DEFAULT_ORBS)
+        self._extra_asteroids = kwargs.get('extra_asteroids', ())
         self._swe_houses_angles = self._get_swe_houses_angles()
 
         self.type = self._type()
@@ -173,7 +174,23 @@ class Chart(Serializable):
         return points
 
     def _asteroids(self):
-        return {}
+        """ Get supported asteroids requested in _show_items as well as
+        any extra ones passed by number. """
+        asteroids = SerializableDict()
+        asteroid_list = self._requested(const.ASTEROIDS)
+
+        for extra_asteroid in self._extra_asteroids:
+            pl = extra_asteroid + swe.AST_OFFSET
+            name = swe.get_planet_name(pl)
+            asteroid_list[name] = pl
+
+        for name, asteroid in asteroid_list.items():
+            res, _ = swe.calc_ut(self._jd, asteroid)
+            lon, _, dist, speed = res[:4]
+            house = self._get_house(lon)
+            asteroids[name] = Asteroid(name, house, lon, dist, speed)
+
+        return asteroids
 
     def _fixed_stars(self):
         return {}

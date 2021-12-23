@@ -99,10 +99,11 @@ class Point(Item):
 
 
 class Asteroid(Item):
-    def __init__(self, name, house, lon, speed):
+    def __init__(self, name, house, lon, dist, speed):
         super().__init__(name, lon, speed)
         self.type = const.ASTEROID
         self.house = house
+        self.distance = dist
 
 
 class FixedStar(Item):
