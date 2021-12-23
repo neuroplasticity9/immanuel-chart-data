@@ -10,6 +10,11 @@
 import swisseph as swe
 
 
+# Chart types
+
+DIURNAL = 'diurnal'
+NOCTURNAL = 'nocturnal'
+
 # Chart item types
 
 HOUSE = 'house'
@@ -123,8 +128,8 @@ TRUE_LILITH = 'True Lilith'
 
 POINTS = {
     NORTH_NODE: swe.MEAN_NODE,
-    # SYZYGY: swe.SYZYGY,
-    # PARS_FORTUNA: swe.PARS_FORTUNA,
+    SYZYGY: 0,                      # Calculated in chart
+    PARS_FORTUNA: 0,                # Calculated in chart
     VERTEX: swe.VERTEX,
     LILITH: swe.MEAN_APOG,
     TRUE_LILITH: swe.OSCU_APOG,

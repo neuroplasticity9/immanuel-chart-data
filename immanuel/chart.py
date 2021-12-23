@@ -18,7 +18,7 @@ import swisseph as swe
 
 from immanuel import aspects, const, convert, transits
 from immanuel.items import AxisAngle, House, Planet, Point
-from immanuel.serializable import Serializable, SerializableDict, SerializableList
+from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict, SerializableList
 
 
 class Chart(Serializable):
@@ -29,21 +29,31 @@ class Chart(Serializable):
         self._hsys = const.HOUSE_SYSTEMS[hsys if hsys is not None else const.PLACIDUS]
         self._swe_houses_angles = self._get_swe_houses_angles()
 
+        self.type = self._type()
         self.houses = self._houses()
         self.angles = self._angles()
         self.planets = self._planets()
         self.points = self._points()
-        self.asteroids = {}
-        self.fixed_stars = {}
+        self.asteroids = self._asteroids()
+        self.fixed_stars = self._fixed_stars()
         self.aspects = self._aspects()
         # self._aspects = {}   # TODO: default list
         # self._orbs = {}      # TODO: default list
 
-        # TODO: serializable list
-
     def _get_swe_houses_angles(self):
         """ This must be called before _houses() and _angles(). """
         return dict(zip(('cusps', 'ascmc', 'cuspsspeed', 'ascmcspeed'), swe.houses_ex2(self._jd, self._lat, self._lon, self._hsys)))
+
+    def _type(self):
+        """ Determine whether this is a day or a night chart. """
+        sun = swe.calc_ut(self._jd, const.PLANETS[const.SUN])[0][0]
+        asc = self._swe_houses_angles['ascmc'][const.ANGLES[const.ASC]]
+        distance = swe.difdeg2n(sun, asc)
+
+        return SerializableBoolean({
+            const.DIURNAL: distance < 0,
+            const.NOCTURNAL: distance >= 0,
+        })
 
     def _houses(self):
         """ Get the house cusps from _swe_houses_angles. """
@@ -78,8 +88,8 @@ class Chart(Serializable):
         planets = SerializableDict()
 
         for name, planet in const.PLANETS.items():
-            ec_res, ec_flg = swe.calc_ut(self._jd, planet)
-            eq_res, eq_flg = swe.calc_ut(self._jd, planet, swe.FLG_EQUATORIAL)
+            ec_res, _ = swe.calc_ut(self._jd, planet)
+            eq_res, _ = swe.calc_ut(self._jd, planet, swe.FLG_EQUATORIAL)
             lon, lat, dist, speed = ec_res[:4]
             dec = eq_res[1]
             house = self._get_house(lon)
@@ -88,16 +98,11 @@ class Chart(Serializable):
         return planets
 
     def _points(self):
-            # Nodes
-            # Syzygy
-        # Pars Fortuna
-        # Liliths
-            # Vertex
         """ Get the main calculated points. """
         points = SerializableDict()
 
         """ Get the nodes. """
-        res, flg = swe.calc_ut(self._jd, const.POINTS[const.NORTH_NODE])
+        res, _ = swe.calc_ut(self._jd, const.POINTS[const.NORTH_NODE])
         lon, lat, dist, speed = res[:4]
         house = self._get_house(lon)
         points[const.NORTH_NODE] = Point(const.NORTH_NODE, house, lon, speed)
@@ -116,17 +121,27 @@ class Chart(Serializable):
         """ Get the latest pre-natal full/new moon. """
         distance = self.planets[const.SUN].distance_to(self.planets[const.MOON])
         jd = transits.previous_new_moon(self._jd) if distance > 0 else transits.previous_full_moon(self._jd)
-        res, flg = swe.calc_ut(jd, const.PLANETS[const.MOON])
+        res, _ = swe.calc_ut(jd, const.PLANETS[const.MOON])
         lon, lat, dist, speed = res[:4]
         house = self._get_house(lon)
         points[const.SYZYGY] = Point(const.SYZYGY, house, lon, speed)
 
+        """ Get the part of fortune. """
+        if self.type[const.DIURNAL]:
+            formula = self.angles[const.ASC].longitude + self.planets[const.MOON].longitude - self.planets[const.SUN].longitude
+        elif self.type[const.NOCTURNAL]:
+            formula = self.angles[const.ASC].longitude + self.planets[const.SUN].longitude - self.planets[const.MOON].longitude
+
+        lon = swe.degnorm(formula)
+        house = self._get_house(lon)
+        points[const.PARS_FORTUNA] = Point(const.PARS_FORTUNA, house, lon, 0)
+
         return points
 
-    def asteroids(self, asteroids):
+    def _asteroids(self):
         return {}
 
-    def fixed_stars(self, fixed_stars):
+    def _fixed_stars(self):
         return {}
 
     def _aspects(self):
