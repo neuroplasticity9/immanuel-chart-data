@@ -29,10 +29,10 @@ class Chart(Serializable):
         self._lat = lat
         self._lon = lon
         self._hsys = const.HOUSE_SYSTEMS[hsys if hsys is not None else const.PLACIDUS]
-        self._show_items = kwargs.get('custom_items', const.DEFAULT_ITEMS)
-        self._show_aspects = kwargs.get('custom_aspects', const.DEFAULT_ASPECTS)
-        self._show_orbs = kwargs.get('custom_orbs', const.DEFAULT_ORBS)
-        self._extra_asteroids = kwargs.get('extra_asteroids', ())
+        self._show_items = kwargs.get('items', const.DEFAULT_ITEMS)
+        self._show_aspects = kwargs.get('aspects', const.DEFAULT_ASPECTS)
+        self._show_orbs = kwargs.get('orbs', const.DEFAULT_ORBS)
+        self._extra_asteroids = kwargs.get('asteroids', ())
         self._swe_houses_angles = self._get_swe_houses_angles()
 
         self.type = self._type()
