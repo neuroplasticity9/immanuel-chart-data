@@ -27,6 +27,7 @@ class Item(Serializable):
     def __init__(self, name, lon, speed):
         self.type = None
         self.name = name
+        self.house = 0
         self.sign = position.sign(lon)
         self.longitude = SignAngle(lon)
         self.speed = Angle(speed)
