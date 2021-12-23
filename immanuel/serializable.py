@@ -46,6 +46,9 @@ class Serializable(SerializableBase):
         """ Returns all members not starting with '_'. """
         return {k: v for k, v in self.__dict__.items() if k[0] != '_'}.items()
 
+    def __getitem__(self, key):
+        return self.__dict__.get(key, None)
+
     def __iter__(self) -> iter:
         """ Simple iterator for public members. """
         for item in self._public_items():
