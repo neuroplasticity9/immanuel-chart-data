@@ -71,16 +71,3 @@ class Aspect(Serializable):
 
     def __str__(self) -> str:
         return f'{self.aspecting} {self.aspected} {self.type.lower()} within {self.orb} ({self.role} / {self.movement} / {self.condition})'
-
-
-def find(aspecting: Item, aspected: Item) -> Aspect:
-    """ Find an aspect between two chart item pairs. """
-    for aspect_type in const.DEFAULT_ASPECTS:
-        aspect_angle = const.ASPECTS[aspect_type]
-        orb = max(const.ORBS[aspecting.name][aspect_type], const.ORBS[aspected.name][aspect_type])
-        distance = abs(aspecting.distance_to(aspected))
-
-        if aspect_angle-orb <= distance <= aspect_angle+orb:
-            return Aspect(aspecting, aspected, aspect_type, distance-aspect_angle)
-
-    return None
