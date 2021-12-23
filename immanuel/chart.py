@@ -77,7 +77,7 @@ class Chart(Serializable):
             speed = ascmcspeed[swe_index]
 
             if name in [const.DESC, const.IC]:
-                lon = (lon - 180) % 360
+                lon = (Decimal(str(lon)) - 180) % 360
 
             angles[name] = AxisAngle(name, lon, speed)
 
@@ -103,7 +103,7 @@ class Chart(Serializable):
 
         """ Get the nodes. """
         res, _ = swe.calc_ut(self._jd, const.POINTS[const.NORTH_NODE])
-        lon, lat, dist, speed = res[:4]
+        lon, _, _, speed = res[:4]
         house = self._get_house(lon)
         points[const.NORTH_NODE] = Point(const.NORTH_NODE, house, lon, speed)
 
@@ -122,7 +122,7 @@ class Chart(Serializable):
         distance = self.planets[const.SUN].distance_to(self.planets[const.MOON])
         jd = transits.previous_new_moon(self._jd) if distance > 0 else transits.previous_full_moon(self._jd)
         res, _ = swe.calc_ut(jd, const.PLANETS[const.MOON])
-        lon, lat, dist, speed = res[:4]
+        lon, _, _, speed = res[:4]
         house = self._get_house(lon)
         points[const.SYZYGY] = Point(const.SYZYGY, house, lon, speed)
 
@@ -135,6 +135,17 @@ class Chart(Serializable):
         lon = swe.degnorm(formula)
         house = self._get_house(lon)
         points[const.PARS_FORTUNA] = Point(const.PARS_FORTUNA, house, lon, 0)
+
+        """ Get the Liliths. """
+        res, _ = swe.calc_ut(self._jd, const.POINTS[const.LILITH])
+        lon, _, _, speed = res[:4]
+        house = self._get_house(lon)
+        points[const.LILITH] = Point(const.LILITH, house, lon, speed)
+
+        res, _ = swe.calc_ut(self._jd, const.POINTS[const.TRUE_LILITH])
+        lon, _, _, speed = res[:4]
+        house = self._get_house(lon)
+        points[const.TRUE_LILITH] = Point(const.TRUE_LILITH, house, lon, speed)
 
         return points
 
