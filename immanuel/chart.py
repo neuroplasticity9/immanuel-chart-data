@@ -77,7 +77,7 @@ class Chart(Serializable):
             speed = ascmcspeed[swe_index]
 
             if name in [const.DESC, const.IC]:
-                lon = (Decimal(str(lon)) - 180) % 360
+                lon = swe.degnorm(Decimal(str(lon)) - 180)
 
             angles[name] = AxisAngle(name, lon, speed)
 

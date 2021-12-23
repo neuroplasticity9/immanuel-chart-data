@@ -13,6 +13,8 @@
 from __future__ import annotations
 from decimal import Decimal
 
+import swisseph as swe
+
 from immanuel import convert
 from immanuel.serializable import Serializable
 
@@ -36,8 +38,7 @@ class AngleBase(Serializable):
 
     def diff(self, other: AngleBase) -> Angle:
         """ Returns the shortest distance between two chart angles. """
-        diff = (other._full - self._full) % 360
-        return Angle(diff if diff <= 180 else diff - 360)
+        return Angle(swe.difdeg2n(other._full, self._full))
 
     def __add__(self, other: float | AngleBase) -> float:
         return self._full + (other._full if isinstance(other, AngleBase) else other)
