@@ -101,15 +101,25 @@ class Chart(Serializable):
         """ Get the main calculated points. """
         points = SerializableDict()
 
-        """ Get the nodes. """
+        """ Get the mean nodes. """
         res, _ = swe.calc_ut(self._jd, const.POINTS[const.NORTH_NODE])
         lon, _, _, speed = res[:4]
         house = self._get_house(lon)
         points[const.NORTH_NODE] = Point(const.NORTH_NODE, house, lon, speed)
 
-        lon = (lon - 180) % 360
+        lon = swe.degnorm(Decimal(str(lon)) - 180)
         house = self._get_house(lon)
         points[const.SOUTH_NODE] = Point(const.SOUTH_NODE, house, lon, speed)
+
+        """ Get the true nodes. """
+        res, _ = swe.calc_ut(self._jd, const.POINTS[const.TRUE_NORTH_NODE])
+        lon, _, _, speed = res[:4]
+        house = self._get_house(lon)
+        points[const.TRUE_NORTH_NODE] = Point(const.TRUE_NORTH_NODE, house, lon, speed)
+
+        lon = swe.degnorm(Decimal(str(lon)) - 180)
+        house = self._get_house(lon)
+        points[const.TRUE_SOUTH_NODE] = Point(const.TRUE_SOUTH_NODE, house, lon, speed)
 
         """ Get the vertex. """
         ascmc, ascmcspeed = itemgetter('ascmc', 'ascmcspeed')(self._swe_houses_angles)
@@ -157,8 +167,8 @@ class Chart(Serializable):
 
     def _aspects(self):
         """ Calculate all requested aspects between chart items. """
-        item_aspects = SerializableDict({v: SerializableList([]) for v in const.PLANETS.keys()})
-        aspect_items = self.planets
+        item_aspects = SerializableDict({v: SerializableList([]) for v in const.CHART_ITEMS.keys()})
+        aspect_items = {**self.planets, **self.points}
 
         for aspecting_name, aspecting_item in aspect_items.items():
             for aspected_name, aspected_item in aspect_items.items():

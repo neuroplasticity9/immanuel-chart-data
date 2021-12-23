@@ -120,6 +120,8 @@ PLANETS = {
 
 NORTH_NODE = 'North Node'
 SOUTH_NODE = 'South Node'
+TRUE_NORTH_NODE = 'True North Node'
+TRUE_SOUTH_NODE = 'True South Node'
 SYZYGY = 'Syzygy'
 PARS_FORTUNA = 'Pars Fortuna'
 VERTEX = 'Vertex'
@@ -128,8 +130,11 @@ TRUE_LILITH = 'True Lilith'
 
 POINTS = {
     NORTH_NODE: swe.MEAN_NODE,
-    SYZYGY: 0,                      # Calculated in chart
-    PARS_FORTUNA: 0,                # Calculated in chart
+    SOUTH_NODE: None,                   # Calculated in chart
+    TRUE_NORTH_NODE: swe.TRUE_NODE,
+    TRUE_SOUTH_NODE: None,              # Calculated in chart
+    SYZYGY: None,                       # Calculated in chart
+    PARS_FORTUNA: None,                 # Calculated in chart
     VERTEX: swe.VERTEX,
     LILITH: swe.MEAN_APOG,
     TRUE_LILITH: swe.OSCU_APOG,
@@ -287,7 +292,7 @@ ASPECTS = {
     BIQUINTILE: 144.0,
 }
 
-ASPECT_ORBS = {
+PLANET_ORBS = {
     CONJUNCTION: 10.0,
     OPPOSITION: 10.0,
     SQUARE: 10.0,
@@ -302,20 +307,45 @@ ASPECT_ORBS = {
     BIQUINTILE: 2.0,
 }
 
+POINT_ORBS = {
+    CONJUNCTION: 1.0,
+    OPPOSITION: 0.0,
+    SQUARE: 0.0,
+    TRINE: 0.0,
+    SEXTILE: 0.0,
+    SEPTILE: 0.0,
+    SEMISQUARE: 0.0,
+    SESQUISQUARE: 0.0,
+    SEMISEXTILE: 0.0,
+    QUINCUNX: 0.0,
+    QUINTILE: 0.0,
+    BIQUINTILE: 0.0,
+}
+
 DEFAULT_ORB: 1.0
 EXACT_ORB = 0.3
 
 ORBS = {
-    SUN: ASPECT_ORBS,
-    MOON: ASPECT_ORBS,
-    MERCURY: ASPECT_ORBS,
-    VENUS: ASPECT_ORBS,
-    MARS: ASPECT_ORBS,
-    JUPITER: ASPECT_ORBS,
-    SATURN: ASPECT_ORBS,
-    URANUS: ASPECT_ORBS,
-    NEPTUNE: ASPECT_ORBS,
-    PLUTO: ASPECT_ORBS,
+    SUN: PLANET_ORBS,
+    MOON: PLANET_ORBS,
+    MERCURY: PLANET_ORBS,
+    VENUS: PLANET_ORBS,
+    MARS: PLANET_ORBS,
+    JUPITER: PLANET_ORBS,
+    SATURN: PLANET_ORBS,
+    URANUS: PLANET_ORBS,
+    NEPTUNE: PLANET_ORBS,
+    PLUTO: PLANET_ORBS,
+
+    NORTH_NODE: POINT_ORBS,
+    SOUTH_NODE: POINT_ORBS,
+    TRUE_NORTH_NODE: POINT_ORBS,
+    TRUE_SOUTH_NODE: POINT_ORBS,
+    SYZYGY: POINT_ORBS,
+    PARS_FORTUNA: POINT_ORBS,
+    VERTEX: POINT_ORBS,
+    LILITH: POINT_ORBS,
+    TRUE_LILITH: POINT_ORBS,
 }
 
 ACTIVE = 'active'
