@@ -4,8 +4,7 @@
 
 """
 
-import os
-import swisseph as swe
+from immanuel import ephemeris
 
-EPHE_PATH = os.path.dirname(__file__) + os.sep + 'resources' + os.sep  + 'pyswisseph'
-swe.set_ephe_path(EPHE_PATH)
+
+ephemeris.set_path()

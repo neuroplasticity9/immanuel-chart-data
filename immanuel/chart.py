@@ -25,6 +25,7 @@ from immanuel.serializable import Serializable, SerializableBoolean, Serializabl
 
 class Chart(Serializable):
     def __init__(self, dt: datetime, lat: float, lon: float, hsys: str, kwargs):
+        """ Set private members. """
         self._jd = dt.jd
         self._lat = lat
         self._lon = lon
@@ -35,6 +36,7 @@ class Chart(Serializable):
         self._extra_asteroids = kwargs.get('asteroids', ())
         self._swe_houses_angles = self._get_swe_houses_angles()
 
+        """ Set public members. """
         self.type = self._type()
         self.houses = self._houses()
         self.angles = self._angles()
