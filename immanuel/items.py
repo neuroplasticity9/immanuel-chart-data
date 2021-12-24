@@ -107,7 +107,8 @@ class Asteroid(Item):
 
 
 class FixedStar(Item):
-    def __init__(self, name, house, lon, speed):
+    def __init__(self, name, house, lon, dist, speed):
         super().__init__(name, lon, speed)
         self.type = const.FIXED_STAR
         self.house = house
+        self.distance = dist

@@ -19,11 +19,17 @@ import swisseph as swe
 
 from immanuel import const, convert, transits
 from immanuel.aspects import Aspect
-from immanuel.items import AxisAngle, House, Planet, Point, Asteroid
+from immanuel.items import AxisAngle, House, Planet, Point, Asteroid, FixedStar
 from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict, SerializableList
 
 
 class Chart(Serializable):
+    """ The Chart class converts data from pyswisseph's functions into
+    useful chart-based data. A Chart class object and all its members
+    are serializable.
+
+    """
+
     def __init__(self, dt: datetime, lat: float, lon: float, hsys: str, kwargs):
         """ Set private members. """
         self._jd = dt.jd
@@ -34,6 +40,7 @@ class Chart(Serializable):
         self._show_aspects = kwargs.get('aspects', const.DEFAULT_ASPECTS)
         self._show_orbs = kwargs.get('orbs', const.DEFAULT_ORBS)
         self._extra_asteroids = kwargs.get('asteroids', ())
+        self._stars = kwargs.get('stars', ())
         self._swe_houses_angles = self._get_swe_houses_angles()
 
         """ Set public members. """
@@ -175,7 +182,7 @@ class Chart(Serializable):
 
         return points
 
-    def _asteroids(self):
+    def _asteroids(self) -> SerializableDict:
         """ Get supported asteroids requested in _show_items as well as
         any extra ones passed by number. """
         asteroids = SerializableDict()
@@ -195,13 +202,24 @@ class Chart(Serializable):
 
         return asteroids
 
-    def _fixed_stars(self):
-        return {}
+    def _fixed_stars(self) -> SerializableDict:
+        """ Get any requested fixed stars by name. """
+        fixed_stars = SerializableDict()
+
+        for name in self._stars:
+            res, stnam, _ = swe.fixstar2_ut(name, self._jd)
+            name = stnam.partition(',')[0]
+            lon, _, dist, speed = res[:4]
+            house = self._get_house(lon)
+            fixed_stars[name] = FixedStar(name, house, lon, dist, speed)
+            self._show_items.append(name)
+
+        return fixed_stars
 
     def _aspects(self) -> SerializableDict:
         """ Calculate all requested aspects between chart items. """
         item_aspects = SerializableDict({v: SerializableList([]) for v in self._show_items})
-        aspect_items = {**self.angles, **self.planets, **self.points, **self.asteroids}
+        aspect_items = {**self.angles, **self.planets, **self.points, **self.asteroids, **self.fixed_stars}
 
         for aspecting_name, aspecting_item in aspect_items.items():
             for aspected_name, aspected_item in aspect_items.items():
@@ -221,7 +239,7 @@ class Chart(Serializable):
 
         return item_aspects
 
-    def _get_house(self, lon) -> int:
+    def _get_house(self, lon: float) -> int:
         """ Returns which house a given longitude appears in. """
         for house in self.houses.values():
             if house.longitude <= lon < house.longitude + house.size:
