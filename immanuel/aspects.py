@@ -45,6 +45,7 @@ class Aspect(Serializable):
         return SerializableBoolean({
             const.ACTIVE: self._aspecting_item.speed > self._aspected_item.speed,
             const.PASSIVE: self._aspecting_item.speed < self._aspected_item.speed,
+            const.EQUAL:  self._aspecting_item.speed == self._aspected_item.speed,
         })
 
     def _movement(self) -> SerializableBoolean:

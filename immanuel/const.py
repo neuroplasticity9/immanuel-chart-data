@@ -386,6 +386,7 @@ DEFAULT_ORBS = {
 
 ACTIVE = 'active'
 PASSIVE = 'passive'
+EQUAL = 'equal'
 
 ASSOCIATE = 'associate'
 DISSOCIATE = 'dissociate'
