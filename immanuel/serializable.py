@@ -21,6 +21,7 @@ class SerializableBase(ABC):
     The idea is to have a standard, recursive method of serializing
     class objects into dicts, or dicts/lists of dicts, suitable for
     JSON output.
+
     """
 
     @abstractmethod
@@ -46,9 +47,6 @@ class Serializable(SerializableBase):
         """ Returns all members not starting with '_'. """
         return {k: v for k, v in self.__dict__.items() if k[0] != '_'}.items()
 
-    def __getitem__(self, key):
-        return self.__dict__.get(key, None)
-
     def __iter__(self) -> iter:
         """ Simple iterator for public members. """
         for item in self._public_items():
@@ -65,12 +63,11 @@ class SerializableBoolean(Serializable):
     def __init__(self, data: dict = {}):
         self.__dict__.update(data)
 
-    def data(self, data: dict) -> Serializable:
-        """ Sets the object's members to the passed dict and returns
-        self for easy instantiation with a dict.
-        """
+    def data(self, data: dict):
         self.__dict__.update(data)
-        return self
+
+    def __getitem__(self, key):
+        return self.__dict__.get(key, None)
 
     def __str__(self) -> str:
         return ', '.join((k.title() for k, v in self if v))
