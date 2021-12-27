@@ -11,7 +11,6 @@
 
 """
 
-from datetime import datetime
 from decimal import Decimal
 from operator import itemgetter
 
@@ -19,6 +18,7 @@ import swisseph as swe
 
 from immanuel import const, convert, transits
 from immanuel.aspects import Aspect
+from immanuel.datetime import DateTime
 from immanuel.items import House, AxisAngle, Planet, Point, Asteroid, FixedStar
 from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict, SerializableList
 
@@ -30,7 +30,7 @@ class Chart(Serializable):
 
     """
 
-    def __init__(self, dt: datetime, lat: float, lon: float, hsys: str, kwargs):
+    def __init__(self, dt: DateTime, lat: float, lon: float, hsys: str, kwargs):
         """ Set private members. """
         self._jd = dt.jd
         self._lat = lat
