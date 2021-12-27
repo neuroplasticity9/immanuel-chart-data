@@ -19,7 +19,7 @@ import swisseph as swe
 
 from immanuel import const, convert, transits
 from immanuel.aspects import Aspect
-from immanuel.items import AxisAngle, House, Planet, Point, Asteroid, FixedStar
+from immanuel.items import House, AxisAngle, Planet, Point, Asteroid, FixedStar
 from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict, SerializableList
 
 
@@ -75,7 +75,7 @@ class Chart(Serializable):
 
         for i, cusp in enumerate(cusps):
             house_number = i + 1
-            size = abs(float((Decimal(str(cusps[i+1 if i < 11 else 0])) - Decimal(str(cusp))) % 360))
+            size = swe.difdeg2n(cusps[i+1 if i < 11 else 0], cusp)
             houses[house_number] = House(house_number, cusp, size, cuspsspeed[i])
 
         return houses
@@ -188,17 +188,17 @@ class Chart(Serializable):
         asteroids = SerializableDict()
         asteroid_list = self._requested(const.ASTEROIDS)
 
-        for extra_asteroid in self._extra_asteroids:
-            pl = extra_asteroid + swe.AST_OFFSET
-            name = swe.get_planet_name(pl)
-            asteroid_list[name] = pl
-            self._show_items.append(name)
-
         for name, asteroid in asteroid_list.items():
             res, _ = swe.calc_ut(self._jd, asteroid)
             lon, _, dist, speed = res[:4]
             house = self._get_house(lon)
             asteroids[name] = Asteroid(name, house, lon, dist, speed)
+
+        for extra_asteroid in self._extra_asteroids:
+            pl = extra_asteroid + swe.AST_OFFSET
+            name = swe.get_planet_name(pl)
+            asteroid_list[name] = pl
+            self._show_items.append(name)
 
         return asteroids
 
@@ -241,10 +241,12 @@ class Chart(Serializable):
 
     def _get_house(self, lon: float) -> int:
         """ Returns which house a given longitude appears in. """
-        for house in self.houses.values():
-            if house.longitude <= lon < house.longitude + house.size:
-                return house.name
-        return None
+        for house_number, house in self.houses.items():
+            lon_diff = swe.difdeg2n(lon, house.longitude)
+            next_cusp_diff = swe.difdeg2n(house.longitude + house.size, house.longitude)
+
+            if 0 < lon_diff < next_cusp_diff:
+                return house_number
 
     def _requested(self, items: dict) -> dict:
         """ Returns which of the passed available items have been
