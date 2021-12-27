@@ -225,6 +225,9 @@ class Chart(Serializable):
         aspect_items = {**self.angles, **self.planets, **self.points, **self.asteroids, **self.fixed_stars}
 
         for aspecting_name, aspecting_item in aspect_items.items():
+            if aspecting_name in const.RECEIVE_ONLY:
+                continue
+
             for aspected_name, aspected_item in aspect_items.items():
                 if aspecting_name == aspected_name:
                     continue
@@ -233,7 +236,7 @@ class Chart(Serializable):
                     aspect_angle = const.ASPECTS[aspect_type]
                     aspecting_orb = self._show_orbs[aspecting_name][aspect_type] if aspecting_name in self._show_orbs else const.DEFAULT_ORB
                     aspected_orb = self._show_orbs[aspected_name][aspect_type] if aspected_name in self._show_orbs else const.DEFAULT_ORB
-                    orb = max(aspecting_orb, aspected_orb)
+                    orb = aspected_orb if aspected_name in const.RECEIVE_ONLY else max(aspecting_orb, aspected_orb)
                     distance = abs(aspecting_item.distance_to(aspected_item))
 
                     if aspect_angle-orb <= distance <= aspect_angle+orb:
