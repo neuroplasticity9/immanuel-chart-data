@@ -48,6 +48,9 @@ class DateTime:
         dt = datetime(*dt_utc)
         return DateTime(dt, lat, lon)
 
+    def isoformat(self):
+        return f'{self._dt.isoformat()}{convert.dec_to_string(self.offset, convert.FORMAT_TIME_OFFSET, convert.ROUND_MINUTE)}'
+
     def _timezone(self) -> str:
         """ Returns the timezone's name. """
         return TimezoneFinder().certain_timezone_at(lat=self._lat, lng=self._lon)
@@ -71,4 +74,4 @@ class DateTime:
         return swe.julday(self._dt.year, self._dt.month, self._dt.day, hour)
 
     def __str__(self):
-        return f'{self._dt.strftime("%c")} {self.timezone}'
+        return f'{self._dt.strftime("%a %d %b %Y %H:%M:%S")} {self.timezone}'

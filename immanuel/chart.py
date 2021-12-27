@@ -44,6 +44,7 @@ class Chart(Serializable):
         self._swe_houses_angles = self._get_swe_houses_angles()
 
         """ Set public members. """
+        self.date = dt.isoformat()
         self.type = self._type()
         self.houses = self._houses()
         self.angles = self._angles()

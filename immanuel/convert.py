@@ -19,9 +19,10 @@ import swisseph as swe
 
 
 FORMAT_TIME = 0
-FORMAT_DMS = 1
-FORMAT_LAT = 2
-FORMAT_LON = 3
+FORMAT_TIME_OFFSET = 1
+FORMAT_DMS = 2
+FORMAT_LAT = 3
+FORMAT_LON = 4
 
 ROUND_DEGREE = (1, swe.SPLIT_DEG_ROUND_DEG)
 ROUND_MINUTE = (2, swe.SPLIT_DEG_ROUND_MIN)
@@ -45,11 +46,13 @@ def dms_to_string(dms: list | tuple, format: int = FORMAT_DMS) -> str:
     if format == FORMAT_DMS or format == FORMAT_TIME:
         if format == FORMAT_DMS:
             symbols = (u'\N{DEGREE SIGN}', "'", '"')
-            string = ''.join(['%02d' % v + symbols[k] for k, v in enumerate(dms[1:])])
+            string = ''.join([f'{v:02d}' + symbols[k] for k, v in enumerate(dms[1:])])
         elif format == FORMAT_TIME:
-            string = ':'.join(['%02d' % v for v in dms[1:]])
+            string = ':'.join([f'{v:02d}' for v in dms[1:]])
         if dms[0] == '-':
             string = '-' + string
+    elif format == FORMAT_TIME_OFFSET:
+        string = dms[0] + ':'.join([f'{v:02d}' for v in dms[1:]])
     elif format == FORMAT_LAT or format == FORMAT_LON:
         if format == FORMAT_LAT:
             dir = 'S' if dms[0] == '-' else 'N'
@@ -79,9 +82,9 @@ def string_to_dms(string: str) -> tuple:
             return ('-' if floats[0] < 0 else '+', abs(floats[0]), *floats[1:])
 
 
-def dec_to_string(dec: float, format: int = FORMAT_DMS) -> str:
+def dec_to_string(dec: float, format: int = FORMAT_DMS, round_to: tuple = ROUND_SECOND) -> str:
     """ Returns a decimal float as either a D:M:S or a D°M'S" string. """
-    return dms_to_string(dec_to_dms(dec), format)
+    return dms_to_string(dec_to_dms(dec, round_to), format)
 
 
 def string_to_dec(string: str) -> str:
