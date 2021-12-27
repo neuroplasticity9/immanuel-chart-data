@@ -76,7 +76,6 @@ class Planet(Item):
         self.movement = Movement(speed)
         self.motion = Motion(speed, name)
         self.dignities = Dignities(lon, name)
-        self.score = self.dignities.score
         # TODO: extras for moon
         # void of course
         # phase
@@ -84,7 +83,7 @@ class Planet(Item):
 
     def __str__(self) -> str:
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
-        score = self.score if self.score == 0 else f'{self.score:+}'
+        score = self.dignities.score if self.dignities.score == 0 else f'{self.dignities.score:+}'
         return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {score}'
 
 
