@@ -70,7 +70,7 @@ class SerializableBoolean(Serializable):
         return self.__dict__.get(key, None)
 
     def __str__(self) -> str:
-        return ', '.join((k.title() for k, v in self if v))
+        return ', '.join((k.title() for k, v in self if isinstance(v, bool) and v))
 
 
 class SerializableDict(SerializableBase, dict):
