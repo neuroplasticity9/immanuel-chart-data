@@ -210,6 +210,9 @@ DOMICILE = 'domicile'
 EXALTED = 'exalted'
 DETRIMENT = 'detriment'
 FALL = 'fall'
+FACE_RULER = 'face'
+TERM_RULER = 'term'
+TRIPLICITY_RULER = 'triplicity'
 
 ESSENTIAL_DIGNITIES = {
     SUN: {
@@ -272,6 +275,133 @@ ESSENTIAL_DIGNITIES = {
         DETRIMENT: TAURUS,
         FALL: PISCES,
     }
+}
+
+FACE_RULERS = {
+    ARIES: (MARS, SUN, VENUS),
+    TAURUS: (MERCURY, MOON, SATURN),
+    GEMINI: (JUPITER, MARS, SUN),
+    CANCER: (VENUS, MERCURY, MOON),
+    LEO: (SATURN, JUPITER, MARS),
+    VIRGO: (SUN, VENUS, MERCURY),
+    LIBRA: (MOON, SATURN, JUPITER),
+    SCORPIO: (MARS, SUN, VENUS),
+    SAGITTARIUS: (MERCURY, MOON, SATURN),
+    CAPRICORN: (JUPITER, MARS, SUN),
+    AQUARIUS: (VENUS, MERCURY, MOON),
+    PISCES: (SATURN, JUPITER, MARS),
+}
+
+TERM_RULERS = {
+    ARIES: {
+        JUPITER: (0, 6),
+        VENUS: (6, 12),
+        MERCURY: (12, 20),
+        MARS: (20, 25),
+        SATURN: (25, 30),
+    },
+    TAURUS: {
+        VENUS: (0, 8),
+        MERCURY: (8, 14),
+        JUPITER: (14, 22),
+        SATURN: (22, 27),
+        MARS: (27, 30),
+    },
+    GEMINI: {
+        MERCURY: (0, 6),
+        JUPITER: (6, 12),
+        VENUS: (12, 17),
+        MARS: (17, 24),
+        SATURN: (24, 30),
+    },
+    CANCER: {
+        MARS: (0, 7),
+        VENUS: (7, 13),
+        MERCURY: (13, 19),
+        JUPITER: (19, 26),
+        SATURN: (26, 30),
+    },
+    LEO: {
+        JUPITER: (0, 6),
+        VENUS: (6, 11),
+        SATURN: (11, 18),
+        MERCURY: (18, 24),
+        MARS: (24, 30),
+    },
+    VIRGO: {
+        MERCURY: (0, 7),
+        VENUS: (7, 17),
+        JUPITER: (17, 21),
+        MARS: (21, 28),
+        SATURN: (28, 30),
+    },
+    LIBRA: {
+        SATURN: (0, 6),
+        MERCURY: (6, 14),
+        JUPITER: (14, 21),
+        VENUS: (21, 28),
+        MARS: (28, 30),
+    },
+    SCORPIO: {
+        MARS: (0, 7),
+        VENUS: (7, 11),
+        MERCURY: (11, 19),
+        JUPITER: (19, 24),
+        SATURN: (24, 30),
+    },
+    SAGITTARIUS: {
+        JUPITER: (0, 12),
+        VENUS: (12, 17),
+        MERCURY: (17, 21),
+        SATURN: (21, 26),
+        MARS: (26, 30),
+    },
+    CAPRICORN: {
+        MERCURY: (0, 7),
+        JUPITER: (7, 14),
+        VENUS: (14, 22),
+        SATURN: (22, 26),
+        MARS: (26, 30),
+    },
+    AQUARIUS: {
+        MERCURY: (0, 7),
+        VENUS: (7, 13),
+        JUPITER: (13, 20),
+        MARS: (20, 25),
+        SATURN: (25, 30),
+    },
+    PISCES: {
+        VENUS: (0, 12),
+        JUPITER: (12, 16),
+        MERCURY: (16, 19),
+        MARS: (19, 28),
+        SATURN: (28, 30),
+    }
+}
+
+TRIPLICITY_RULERS = {
+    ARIES: (SUN, JUPITER, SATURN),
+    TAURUS: (VENUS, MOON, MARS),
+    GEMINI: (SATURN, MERCURY, JUPITER),
+    CANCER: (VENUS, MARS, MOON),
+    LEO: (SUN, JUPITER, SATURN),
+    VIRGO: (VENUS, MOON, MARS),
+    LIBRA: (SATURN, MERCURY, JUPITER),
+    SCORPIO: (VENUS, MARS, MOON),
+    SAGITTARIUS: (SUN, JUPITER, SATURN),
+    CAPRICORN: (VENUS, MOON, MARS),
+    AQUARIUS: (SATURN, MERCURY, JUPITER),
+    PISCES: (VENUS, MARS, MOON),
+}
+
+SCORES = {
+    DOMICILE: 5,
+    EXALTED: 4,
+    TRIPLICITY_RULER: 3,
+    TERM_RULER: 2,
+    FACE_RULER: 1,
+    FALL: -4,
+    DETRIMENT: -5,
 }
 
 # Aspects & orbs

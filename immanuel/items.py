@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from immanuel import const, position
 from immanuel.angles import Angle, SignAngle
-from immanuel.position import Movement, Motion, Dignity
+from immanuel.position import Movement, Motion, Dignities
 from immanuel.serializable import Serializable
 
 
@@ -75,8 +75,8 @@ class Planet(Item):
         self.out_of_bounds = position.is_out_of_bounds(dec)
         self.movement = Movement(speed)
         self.motion = Motion(speed, name)
-        self.dignity = Dignity(self.sign, name)
-        self.score = self._score()
+        self.dignities = Dignities(lon, name)
+        self.score = self.dignities.score
         # TODO: extras for moon
         # void of course
         # phase
@@ -84,11 +84,8 @@ class Planet(Item):
 
     def __str__(self) -> str:
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
-        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house'
-
-    def _score(self) -> int:
-        # TODO
-        return 0
+        score = self.score if self.score == 0 else f'{self.score:+}'
+        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {score}'
 
 
 class Point(Item):
