@@ -45,6 +45,8 @@ class Chart(Serializable):
 
         """ Set public members. """
         self.date = dt.isoformat()
+        self.latitude = convert.dec_to_string(lat, convert.FORMAT_LAT)
+        self.longitude = convert.dec_to_string(lon, convert.FORMAT_LON)
         self.type = self._type()
         self.houses = self._houses()
         self.angles = self._angles()
