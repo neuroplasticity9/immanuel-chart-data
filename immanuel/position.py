@@ -68,53 +68,46 @@ def sign(lon: float) -> str:
 
 def is_domicile(name: str, lon: float) -> bool:
     """ Whether the passed planet is domiciled in the passed longitude. """
-    _sign = sign(lon)
-    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.DOMICILE]
+    dignity = const.ESSENTIAL_DIGNITIES[sign(lon)][const.DOMICILE]
     return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
 def is_exalted(name: str, lon: float) -> bool:
     """ Whether the passed planet is exalted in the passed longitude. """
-    _sign = sign(lon)
-    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.EXALTED]
+    dignity = const.ESSENTIAL_DIGNITIES[sign(lon)][const.EXALTED]
     return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
 def is_in_detriment(name: str, lon: float) -> bool:
     """ Whether the passed planet is in detriment in the passed longitude. """
-    _sign = sign(lon)
-    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.DETRIMENT]
+    dignity = const.ESSENTIAL_DIGNITIES[sign(lon)][const.DETRIMENT]
     return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
 def is_in_fall(name: str, lon: float) -> bool:
     """ Whether the passed planet is in fall in the passed longitude. """
-    _sign = sign(lon)
-    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.FALL]
+    dignity = const.ESSENTIAL_DIGNITIES[sign(lon)][const.FALL]
     return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
 def is_triplicity_ruler(name: str, lon: float) -> bool:
     """ Whether the passed planet is a triplicity ruler
     in the passed longitude. """
-    _sign = sign(lon)
-    return name in const.ESSENTIAL_DIGNITIES[_sign][const.TRIPLICITY_RULER]
+    return name in const.ESSENTIAL_DIGNITIES[sign(lon)][const.TRIPLICITY_RULER]
 
 
 def is_face_ruler(name: str, lon: float) -> bool:
     """ Whether the passed planet is the decan ruler
     in the passed longitude. """
-    _sign = sign(lon)
-    return name in const.ESSENTIAL_DIGNITIES[_sign][const.FACE_RULER][int((lon % 30) // 10)]
+    return name in const.ESSENTIAL_DIGNITIES[sign(lon)][const.FACE_RULER][int((lon % 30) // 10)]
 
 
 def is_term_ruler(name: str, lon: float) -> bool:
     """ Whether the passed planet is the term ruler
     in the passed longitude. """
-    _sign = sign(lon)
     sign_lon = int(lon % 30)
 
-    for planet, lon_range in const.ESSENTIAL_DIGNITIES[_sign][const.TERM_RULER].items():
+    for planet, lon_range in const.ESSENTIAL_DIGNITIES[sign(lon)][const.TERM_RULER].items():
         if name == planet and lon_range[0] <= sign_lon < lon_range[1]:
             return True
 
@@ -123,4 +116,4 @@ def is_term_ruler(name: str, lon: float) -> bool:
 
 def is_out_of_bounds(dec: float) -> bool:
     """ Returns whether the passed declination is out of bounds. """
-    return abs(dec) < const.DECLINATION_BOUNDARY
+    return abs(dec) > const.DECLINATION_BOUNDARY
