@@ -6,12 +6,10 @@
     This module provides data for an individual item's position & speed.
 
     These classes provide simple serializable, stringable objects
-    for various positional data such as movement, motion, and dignity,
+    for various positional data such as movement, motion, and dignities,
     as well as helper functions.
 
 """
-
-from abc import ABC
 
 from immanuel import const
 from immanuel.serializable import SerializableBoolean
@@ -50,19 +48,17 @@ class Dignities(SerializableBoolean):
 
     """
     def __init__(self, lon: float, name: str):
-        self._sign = sign(lon)
-
         self.data({
-            const.DOMICILE: self._sign in domicile(name),
-            const.EXALTED: self._sign == exalted(name),
-            const.DETRIMENT: self._sign == detriment(name),
-            const.FALL: self._sign == fall(name),
-            const.FACE_RULER: name == face_ruler(lon),
-            const.TERM_RULER: name == term_ruler(lon),
-            const.TRIPLICITY_RULER: name in triplicity_rulers(self._sign),
+            const.DOMICILE: is_domicile(name, lon),
+            const.EXALTED: is_exalted(name, lon),
+            const.DETRIMENT: is_in_detriment(name, lon),
+            const.FALL: is_in_fall(name, lon),
+            const.TRIPLICITY_RULER: is_triplicity_ruler(name, lon),
+            const.FACE_RULER: is_face_ruler(name, lon),
+            const.TERM_RULER: is_term_ruler(name, lon),
         })
 
-        self.score = sum({v for k, v in const.SCORES.items() if self[k]})
+        self.score = sum({v for k, v in const.DIGNITY_SCORES.items() if self[k]})
 
 
 def sign(lon: float) -> str:
@@ -70,43 +66,59 @@ def sign(lon: float) -> str:
     return const.SIGNS[int(lon / 30)]
 
 
-def domicile(name: str) -> tuple:
-    """ Returns the sign(s) the passed planet is domiciled. """
-    return const.ESSENTIAL_DIGNITIES[name][const.DOMICILE]
+def is_domicile(name: str, lon: float) -> bool:
+    """ Whether the passed planet is domiciled in the passed longitude. """
+    _sign = sign(lon)
+    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.DOMICILE]
+    return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
-def exalted(name: str) -> str:
-    """ Returns the sign the passed planet is exalted. """
-    return const.ESSENTIAL_DIGNITIES[name][const.EXALTED]
+def is_exalted(name: str, lon: float) -> bool:
+    """ Whether the passed planet is exalted in the passed longitude. """
+    _sign = sign(lon)
+    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.EXALTED]
+    return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
-def detriment(name: str) -> str:
-    """ Returns the sign the passed planet is in detriment. """
-    return const.ESSENTIAL_DIGNITIES[name][const.DETRIMENT]
+def is_in_detriment(name: str, lon: float) -> bool:
+    """ Whether the passed planet is in detriment in the passed longitude. """
+    _sign = sign(lon)
+    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.DETRIMENT]
+    return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
-def fall(name: str) -> str:
-    """ Returns the sign the passed planet is in fall / exile. """
-    return const.ESSENTIAL_DIGNITIES[name][const.FALL]
+def is_in_fall(name: str, lon: float) -> bool:
+    """ Whether the passed planet is in fall in the passed longitude. """
+    _sign = sign(lon)
+    dignity = const.ESSENTIAL_DIGNITIES[_sign][const.FALL]
+    return (name in dignity) if isinstance(dignity, tuple) else (name == dignity)
 
 
-def face_ruler(lon: float) -> str:
-    """ Returns the planetary decan ruler of the pased longitude. """
-    return const.FACE_RULERS[sign(lon)][int((lon % 30) // 10)]
+def is_triplicity_ruler(name: str, lon: float) -> bool:
+    """ Whether the passed planet is a triplicity ruler
+    in the passed longitude. """
+    _sign = sign(lon)
+    return name in const.ESSENTIAL_DIGNITIES[_sign][const.TRIPLICITY_RULER]
 
 
-def term_ruler(lon: float) -> str:
-    """ Returns the planetary term ruler of the pased longitude. """
+def is_face_ruler(name: str, lon: float) -> bool:
+    """ Whether the passed planet is the decan ruler
+    in the passed longitude. """
+    _sign = sign(lon)
+    return name in const.ESSENTIAL_DIGNITIES[_sign][const.FACE_RULER][int((lon % 30) // 10)]
+
+
+def is_term_ruler(name: str, lon: float) -> bool:
+    """ Whether the passed planet is the term ruler
+    in the passed longitude. """
+    _sign = sign(lon)
     sign_lon = int(lon % 30)
 
-    for planet, lon_range in const.TERM_RULERS[sign(lon)].items():
-        if lon_range[0] <= sign_lon < lon_range[1]:
-            return planet
+    for planet, lon_range in const.ESSENTIAL_DIGNITIES[_sign][const.TERM_RULER].items():
+        if name == planet and lon_range[0] <= sign_lon < lon_range[1]:
+            return True
 
-
-def triplicity_rulers(sign: str) -> tuple:
-    """ Returns the three triplicity rulers for the passed sign. """
-    return const.TRIPLICITY_RULERS[sign]
+    return False
 
 
 def is_out_of_bounds(dec: float) -> bool:
