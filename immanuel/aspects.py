@@ -64,7 +64,7 @@ class Aspect(Serializable):
         })
 
     def __str__(self):
-        return f'{self.active.name} {self.passive.name} {self.type.lower()} within {self.orb} - ({self.movement} / {self.condition})'
+        return f'{self.active.name} {self.passive.name} {self.type.lower()} within {self.orb} ({self.movement} / {self.condition})'
 
 
 def active_passive(item1: Item, item2: Item) -> tuple:

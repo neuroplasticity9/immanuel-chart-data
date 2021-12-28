@@ -20,7 +20,7 @@ from immanuel import aspects, const, convert, transits
 from immanuel.aspects import Aspect
 from immanuel.datetime import DateTime
 from immanuel.items import House, AxisAngle, Planet, Point, Asteroid, FixedStar
-from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict, SerializableList
+from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict
 
 
 class Chart(Serializable):
@@ -221,7 +221,7 @@ class Chart(Serializable):
 
     def _aspects(self) -> SerializableDict:
         """ Calculate all requested aspects between chart items. """
-        item_aspects = SerializableDict({v: SerializableList([]) for v in self._show_items})
+        item_aspects = SerializableDict({v: SerializableDict({}) for v in self._show_items})
         aspect_items = {**self.angles, **self.planets, **self.points, **self.asteroids, **self.fixed_stars}
 
         for item1_name, item1 in aspect_items.items():
@@ -231,7 +231,7 @@ class Chart(Serializable):
 
                 active, passive = aspects.active_passive(item1, item2)
 
-                if active.name in const.PASSIVE_ONLY:
+                if passive.name in item_aspects[active.name] or active.name in const.PASSIVE_ONLY:
                     continue
 
                 for aspect_type in self._show_aspects:
@@ -244,8 +244,8 @@ class Chart(Serializable):
 
                     if aspect_angle-orb <= abs(distance) <= aspect_angle+orb:
                         aspect = Aspect(active, passive, aspect_type, distance)
-                        item_aspects[active.name].append(aspect)
-                        item_aspects[passive.name].append(aspect)
+                        item_aspects[active.name][passive.name] = aspect
+                        item_aspects[passive.name][active.name] = aspect
 
         return item_aspects
 
