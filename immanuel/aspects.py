@@ -65,7 +65,6 @@ class Aspect(Serializable):
 
     def __str__(self):
         return f'{self.active.name} {self.passive.name} {self.type.lower()} within {self.orb} - ({self.movement} / {self.condition})'
-        # return f'{self.active.name} {self.passive.name} {self.type.lower()} within {self.orb} - should be at {self._aspect_exact_lon}, is at {Angle(self.active.longitude.full)}'
 
 
 def active_passive(item1: Item, item2: Item) -> tuple:
