@@ -16,7 +16,7 @@ from operator import itemgetter
 
 import swisseph as swe
 
-from immanuel import const, convert, transits
+from immanuel import aspects, const, convert, transits
 from immanuel.aspects import Aspect
 from immanuel.datetime import DateTime
 from immanuel.items import House, AxisAngle, Planet, Point, Asteroid, FixedStar
@@ -224,24 +224,28 @@ class Chart(Serializable):
         item_aspects = SerializableDict({v: SerializableList([]) for v in self._show_items})
         aspect_items = {**self.angles, **self.planets, **self.points, **self.asteroids, **self.fixed_stars}
 
-        for aspecting_name, aspecting_item in aspect_items.items():
-            if aspecting_name in const.RECEIVE_ONLY:
-                continue
+        for item1_name, item1 in aspect_items.items():
+            for item2_name, item2 in aspect_items.items():
+                if item1_name == item2_name:
+                    continue
 
-            for aspected_name, aspected_item in aspect_items.items():
-                if aspecting_name == aspected_name:
+                active, passive = aspects.active_passive(item1, item2)
+
+                if active.name in const.PASSIVE_ONLY:
                     continue
 
                 for aspect_type in self._show_aspects:
                     aspect_angle = const.ASPECTS[aspect_type]
-                    aspecting_orb = self._show_orbs[aspecting_name][aspect_type] if aspecting_name in self._show_orbs else const.DEFAULT_ORB
-                    aspected_orb = self._show_orbs[aspected_name][aspect_type] if aspected_name in self._show_orbs else const.DEFAULT_ORB
-                    orb = aspected_orb if aspected_name in const.RECEIVE_ONLY else max(aspecting_orb, aspected_orb)
-                    distance = abs(aspecting_item.distance_to(aspected_item))
+                    # TODO: check whether both orbs are fine or change to only active orb
+                    active_orb = self._show_orbs[active.name][aspect_type] if active.name in self._show_orbs else const.DEFAULT_ORB
+                    passive_orb = self._show_orbs[passive.name][aspect_type] if passive.name in self._show_orbs else const.DEFAULT_ORB
+                    orb = passive_orb if passive.name in const.PASSIVE_ONLY else max(active_orb, passive_orb)
+                    distance = active.distance_to(passive)
 
-                    if aspect_angle-orb <= distance <= aspect_angle+orb:
-                        aspect = Aspect(aspecting_item, aspected_item, aspect_type, distance-aspect_angle)
-                        item_aspects[aspecting_name].append(aspect)
+                    if aspect_angle-orb <= abs(distance) <= aspect_angle+orb:
+                        aspect = Aspect(active, passive, aspect_type, distance)
+                        item_aspects[active.name].append(aspect)
+                        item_aspects[passive.name].append(aspect)
 
         return item_aspects
 

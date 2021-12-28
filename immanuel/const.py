@@ -517,7 +517,7 @@ DEFAULT_ORBS = {
     TRUE_LILITH: POINT_ORBS,
 }
 
-RECEIVE_ONLY = (
+PASSIVE_ONLY = (
     ASC, DESC, MC, IC,
     NORTH_NODE, SOUTH_NODE, TRUE_NORTH_NODE, TRUE_SOUTH_NODE, SYZYGY, PARS_FORTUNA, VERTEX,
 )
@@ -529,6 +529,6 @@ EQUAL = 'equal'
 ASSOCIATE = 'associate'
 DISSOCIATE = 'dissociate'
 
-SEPARATIVE = 'separative'
-EXACT = 'exact'
 APPLICATIVE = 'applicative'
+EXACT = 'exact'
+SEPARATIVE = 'separative'

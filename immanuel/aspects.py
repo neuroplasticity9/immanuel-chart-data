@@ -13,6 +13,8 @@
 
 """
 
+import swisseph as swe
+
 from immanuel import const, position
 from immanuel.angles import Angle
 from immanuel.items import Item
@@ -22,53 +24,50 @@ from immanuel.serializable import Serializable, SerializableBoolean
 class Aspect(Serializable):
     """ Main class for encapsulating a chart aspect. This will specify
     which is the active and which is the passive partner in the aspect,
-    and provides extra data such as associate/dissociate condition, and
+    and provide extra data such as associate/dissociate condition, and
     separative/applicative movement.
 
     """
 
-    def __init__(self, aspecting: Item, aspected: Item, aspect_type: str, orb: float):
-        self._aspecting_item = aspecting
-        self._aspected_item = aspected
-        self.aspecting = aspecting.name
-        self.aspected = aspected.name
+    def __init__(self, active: Item, passive: Item, aspect_type: str, distance: Angle):
+        self.active = active
+        self.passive = passive
         self.type = aspect_type
         self.aspect = const.ASPECTS[aspect_type]
-        self.distance = aspecting.distance_to(aspected)
-        self.orb = Angle(orb)
-        self.role = self._role()
+        self.distance = distance
+        self._aspect_exact_lon = Angle(swe.degnorm(self.passive.longitude + (self.aspect if distance < 0 else -self.aspect)))
+        self.orb = self._aspect_exact_lon.diff(self.active.longitude)
         self.movement = self._movement()
         self.condition = self._condition()
-
-    def _role(self) -> SerializableBoolean:
-        """ Determine whether the aspecting item is active or passive. """
-        return SerializableBoolean({
-            const.ACTIVE: self._aspecting_item.speed > self._aspected_item.speed,
-            const.PASSIVE: self._aspecting_item.speed < self._aspected_item.speed,
-            const.EQUAL:  self._aspecting_item.speed == self._aspected_item.speed,
-        })
 
     def _movement(self) -> SerializableBoolean:
         """ Determine if the active body is approaching, exactly on,
         or leaving its aspect with the passive body.
         """
-        aspect_exact_longitude = (self._aspected_item.longitude + (self.aspect if self.distance >= 0 else -self.aspect)) % 360
+        exact = self._aspect_exact_lon-const.EXACT_ORB <= self.active.longitude <= self._aspect_exact_lon+const.EXACT_ORB
+        applicative = not exact and (self.orb < 0 or self.active.movement[const.RETROGRADE])
+        separative = not exact and not applicative
 
         return SerializableBoolean({
-            const.SEPARATIVE: self._aspecting_item.longitude > aspect_exact_longitude + const.EXACT_ORB,
-            const.EXACT: aspect_exact_longitude - const.EXACT_ORB <= self._aspecting_item.longitude <= aspect_exact_longitude + const.EXACT_ORB,
-            const.APPLICATIVE: self._aspecting_item.longitude < aspect_exact_longitude - const.EXACT_ORB,
+            const.APPLICATIVE: applicative,
+            const.EXACT: exact,
+            const.SEPARATIVE: separative,
         })
 
     def _condition(self) -> SerializableBoolean:
-        """ Determine if the orb pushes the aspected item out of sign. """
-        aspect_exact_longitude = (self._aspecting_item.longitude + (self.aspect if self.distance >= 0 else -self.aspect)) % 360
-        associate = position.sign(aspect_exact_longitude) == position.sign(self._aspected_item.longitude)
+        """ Determine if the orb has pushed the aspected item out of sign. """
+        associate = position.sign(self._aspect_exact_lon) == position.sign(self.active.longitude)
 
         return SerializableBoolean({
             const.ASSOCIATE: associate,
             const.DISSOCIATE: not associate,
         })
 
-    def __str__(self) -> str:
-        return f'{self.aspecting} {self.aspected} {self.type.lower()} within {self.orb} ({self.role} / {self.movement} / {self.condition})'
+    def __str__(self):
+        return f'{self.active.name} {self.passive.name} {self.type.lower()} within {self.orb} - ({self.movement} / {self.condition})'
+        # return f'{self.active.name} {self.passive.name} {self.type.lower()} within {self.orb} - should be at {self._aspect_exact_lon}, is at {Angle(self.active.longitude.full)}'
+
+
+def active_passive(item1: Item, item2: Item) -> tuple:
+    """ Returns active (fastest) then passive (slowest) chart item. """
+    return (item1, item2) if abs(item1.speed) > abs(item2.speed) else (item2, item1)

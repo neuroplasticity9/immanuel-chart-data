@@ -31,6 +31,7 @@ class Item(Serializable):
         self.sign = position.sign(lon)
         self.longitude = SignAngle(lon)
         self.speed = Angle(speed)
+        self.movement = Movement(speed)
 
     def distance_to(self, other: Item) -> Angle:
         """ Chart angle distance between two chart items. """
@@ -73,7 +74,6 @@ class Planet(Item):
         self.declination = Angle(dec)
         self.distance = dist
         self.out_of_bounds = position.is_out_of_bounds(dec)
-        self.movement = Movement(speed)
         self.motion = Motion(speed, name)
         self.dignities = Dignities(lon, name)
         # TODO: extras for moon
@@ -83,8 +83,7 @@ class Planet(Item):
 
     def __str__(self) -> str:
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
-        score = self.dignities.score if self.dignities.score == 0 else f'{self.dignities.score:+}'
-        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {score}'
+        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {self.dignities.score:+}'
 
 
 class Point(Item):
