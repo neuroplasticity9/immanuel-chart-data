@@ -19,8 +19,8 @@ from immanuel import convert
 from immanuel.serializable import Serializable
 
 
-WHOLE = 0
-SHORTEST = 1
+SHORTEST = 0
+WHOLE_CHART = 1
 
 class AngleBase(Serializable):
     """ Base class for taking care of common conversions between decimal

@@ -77,18 +77,10 @@ class Planet(Item):
         self.motion = Motion(speed, name)
         self.dignities = Dignities(lon, name)
 
-        if self.name == const.MOON:
-            self.phase = None
-
     def __str__(self) -> str:
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
-        string = f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house'
+        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {self.dignities.score:+}'
 
-        if self.name == const.MOON:
-            string += f' ({self.phase})'
-
-        string += f' {self.dignities.score:+}'
-        return string
 
 class Point(Item):
     def __init__(self, name, house, lon, speed):

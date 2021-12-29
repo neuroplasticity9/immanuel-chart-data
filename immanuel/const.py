@@ -118,14 +118,14 @@ PLANETS = {
 
 # Moon phases
 
-NEW_MOON = 'New Moon'
-WAXING_CRESCENT = 'Waxing Crescent'
-FIRST_QUARTER = 'First Quarter'
-WAXING_GIBBOUS = 'Waxing Gibbous'
-FULL_MOON = 'Full Moon'
-DISSEMINATING = 'Disseminating'
-THIRD_QUARTER = 'Third Quarter'
-BALSAMIC = 'Balsamic'
+NEW_MOON = 'new_moon'
+WAXING_CRESCENT = 'waxing_crescent'
+FIRST_QUARTER = 'first_quarter'
+WAXING_GIBBOUS = 'waxing_gibbous'
+FULL_MOON = 'full_moon'
+DISSEMINATING = 'disseminating'
+THIRD_QUARTER = 'third_quarter'
+BALSAMIC = 'balsamic'
 
 MOON_PHASES = {
     NEW_MOON: 0,
@@ -232,9 +232,9 @@ DOMICILE = 'domicile'
 EXALTED = 'exalted'
 DETRIMENT = 'detriment'
 FALL = 'fall'
-FACE_RULER = 'face'
-TERM_RULER = 'term'
-TRIPLICITY_RULER = 'triplicity'
+FACE_RULER = 'face_ruler'
+TERM_RULER = 'term_ruler'
+TRIPLICITY_RULER = 'triplicity_ruler'
 
 ESSENTIAL_DIGNITIES = {
     ARIES: {

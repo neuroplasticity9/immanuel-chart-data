@@ -48,6 +48,7 @@ class Chart(Serializable):
         self.latitude = convert.dec_to_string(lat, convert.FORMAT_LAT)
         self.longitude = convert.dec_to_string(lon, convert.FORMAT_LON)
         self.type = self._type()
+        self.moon_phase = self._moon_phase()
         self.houses = self._houses()
         self.angles = self._angles()
         self.planets = self._planets()
@@ -55,9 +56,6 @@ class Chart(Serializable):
         self.asteroids = self._asteroids()
         self.fixed_stars = self._fixed_stars()
         self.aspects = self._aspects()
-
-        """ Extra info for the moon. """
-        self._set_moon_data()
 
     def _get_swe_houses_angles(self) -> dict:
         """ This must be called first before the other chart methods. """
@@ -252,10 +250,13 @@ class Chart(Serializable):
 
         return item_aspects
 
-    def _set_moon_data(self):
-        """ Add extra data to the Moon item. """
-        distance = self.planets[const.SUN].distance_to(self.planets[const.MOON], angles.WHOLE)
-        self.planets[const.MOON].phase = [k for k, v in const.MOON_PHASES.items() if distance > v][-1]
+    def _moon_phase(self) -> SerializableBoolean:
+        """ Calculate moon phase. """
+        sun = swe.calc_ut(self._jd, const.PLANETS[const.SUN])[0][0]
+        moon = swe.calc_ut(self._jd, const.PLANETS[const.MOON])[0][0]
+        distance = swe.difdegn(moon, sun)
+        phase_name = [k for k, v in const.MOON_PHASES.items() if distance > v][-1]
+        return SerializableBoolean({k: k == phase_name for k, v in const.MOON_PHASES.items()})
 
     def _get_house(self, lon: float) -> int:
         """ Returns which house a given longitude appears in. """
