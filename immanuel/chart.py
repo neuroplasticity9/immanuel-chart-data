@@ -16,7 +16,7 @@ from operator import itemgetter
 
 import swisseph as swe
 
-from immanuel import aspects, const, convert, transits
+from immanuel import angles, aspects, const, convert, transits
 from immanuel.aspects import Aspect
 from immanuel.datetime import DateTime
 from immanuel.items import House, AxisAngle, Planet, Point, Asteroid, FixedStar
@@ -55,6 +55,9 @@ class Chart(Serializable):
         self.asteroids = self._asteroids()
         self.fixed_stars = self._fixed_stars()
         self.aspects = self._aspects()
+
+        """ Extra info for the moon. """
+        self._set_moon_data()
 
     def _get_swe_houses_angles(self) -> dict:
         """ This must be called first before the other chart methods. """
@@ -248,6 +251,11 @@ class Chart(Serializable):
                         item_aspects[passive.name][active.name] = aspect
 
         return item_aspects
+
+    def _set_moon_data(self):
+        """ Add extra data to the Moon item. """
+        distance = self.planets[const.SUN].distance_to(self.planets[const.MOON], angles.WHOLE)
+        self.planets[const.MOON].phase = [k for k, v in const.MOON_PHASES.items() if distance > v][-1]
 
     def _get_house(self, lon: float) -> int:
         """ Returns which house a given longitude appears in. """

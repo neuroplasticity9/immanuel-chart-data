@@ -12,7 +12,7 @@
 
 from __future__ import annotations
 
-from immanuel import const, position
+from immanuel import angles, const, position
 from immanuel.angles import Angle, SignAngle
 from immanuel.position import Movement, Motion, Dignities
 from immanuel.serializable import Serializable
@@ -33,9 +33,9 @@ class Item(Serializable):
         self.speed = Angle(speed)
         self.movement = Movement(speed)
 
-    def distance_to(self, other: Item) -> Angle:
+    def distance_to(self, other: Item, normalise: int = angles.SHORTEST) -> Angle:
         """ Chart angle distance between two chart items. """
-        return self.longitude.diff(other.longitude)
+        return self.longitude.diff(other.longitude, normalise)
 
     def __eq__(self, other: Item) -> bool:
         """ Equality based on name. """
@@ -76,15 +76,19 @@ class Planet(Item):
         self.out_of_bounds = position.is_out_of_bounds(dec)
         self.motion = Motion(speed, name)
         self.dignities = Dignities(lon, name)
-        # TODO: extras for moon
-        # void of course
-        # phase
-        # balsamic??
+
+        if self.name == const.MOON:
+            self.phase = None
 
     def __str__(self) -> str:
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
-        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {self.dignities.score:+}'
+        string = f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house'
 
+        if self.name == const.MOON:
+            string += f' ({self.phase})'
+
+        string += f' {self.dignities.score:+}'
+        return string
 
 class Point(Item):
     def __init__(self, name, house, lon, speed):

@@ -116,6 +116,28 @@ PLANETS = {
     PLUTO: swe.PLUTO,
 }
 
+# Moon phases
+
+NEW_MOON = 'New Moon'
+WAXING_CRESCENT = 'Waxing Crescent'
+FIRST_QUARTER = 'First Quarter'
+WAXING_GIBBOUS = 'Waxing Gibbous'
+FULL_MOON = 'Full Moon'
+DISSEMINATING = 'Disseminating'
+THIRD_QUARTER = 'Third Quarter'
+BALSAMIC = 'Balsamic'
+
+MOON_PHASES = {
+    NEW_MOON: 0,
+    WAXING_CRESCENT: 45,
+    FIRST_QUARTER: 90,
+    WAXING_GIBBOUS: 135,
+    FULL_MOON: 180,
+    DISSEMINATING: 225,
+    THIRD_QUARTER: 270,
+    BALSAMIC: 315,
+}
+
 # Points
 
 NORTH_NODE = 'North Node'

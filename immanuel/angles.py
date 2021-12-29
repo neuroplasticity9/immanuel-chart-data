@@ -19,6 +19,9 @@ from immanuel import convert
 from immanuel.serializable import Serializable
 
 
+WHOLE = 0
+SHORTEST = 1
+
 class AngleBase(Serializable):
     """ Base class for taking care of common conversions between decimal
     angles and human-readable formats. Instances can be compared against
@@ -36,9 +39,9 @@ class AngleBase(Serializable):
         self.angle = angle
         self.direction, self.degrees, self.minutes, self.seconds = dms
 
-    def diff(self, other: AngleBase) -> Angle:
-        """ Returns the shortest distance between two chart angles. """
-        return Angle(swe.difdeg2n(other._full, self._full))
+    def diff(self, other: AngleBase, normalise: int = SHORTEST) -> Angle:
+        """ Returns the distance between two chart angles. """
+        return Angle(swe.difdeg2n(other._full, self._full)) if normalise == SHORTEST else Angle(swe.difdegn(other._full, self._full))
 
     def __add__(self, other: float | AngleBase) -> float:
         return self._full + (other._full if isinstance(other, AngleBase) else other)
