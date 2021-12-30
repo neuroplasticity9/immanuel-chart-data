@@ -255,8 +255,12 @@ class Chart(Serializable):
         sun = swe.calc_ut(self._jd, const.PLANETS[const.SUN])[0][0]
         moon = swe.calc_ut(self._jd, const.PLANETS[const.MOON])[0][0]
         distance = swe.difdegn(moon, sun)
-        phase_name = [k for k, v in const.MOON_PHASES.items() if distance > v][-1]
-        return SerializableBoolean({k: k == phase_name for k, v in const.MOON_PHASES.items()})
+
+        for phase, end in const.MOON_PHASES.items():
+            if distance < end:
+                break
+
+        return SerializableBoolean({k: k == phase for k, v in const.MOON_PHASES.items()})
 
     def _get_house(self, lon: float) -> int:
         """ Returns which house a given longitude appears in. """

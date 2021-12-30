@@ -116,7 +116,7 @@ PLANETS = {
     PLUTO: swe.PLUTO,
 }
 
-# Moon phases
+# Moon phases & their end positions relative to the Sun
 
 NEW_MOON = 'new_moon'
 WAXING_CRESCENT = 'waxing_crescent'
@@ -128,14 +128,14 @@ THIRD_QUARTER = 'third_quarter'
 BALSAMIC = 'balsamic'
 
 MOON_PHASES = {
-    NEW_MOON: 0,
-    WAXING_CRESCENT: 45,
-    FIRST_QUARTER: 90,
-    WAXING_GIBBOUS: 135,
-    FULL_MOON: 180,
-    DISSEMINATING: 225,
-    THIRD_QUARTER: 270,
-    BALSAMIC: 315,
+    NEW_MOON: 45,
+    WAXING_CRESCENT: 90,
+    FIRST_QUARTER: 135,
+    WAXING_GIBBOUS: 180,
+    FULL_MOON: 225,
+    DISSEMINATING: 270,
+    THIRD_QUARTER: 315,
+    BALSAMIC: 360,
 }
 
 # Points
