@@ -544,10 +544,6 @@ PASSIVE_ONLY = (
     NORTH_NODE, SOUTH_NODE, TRUE_NORTH_NODE, TRUE_SOUTH_NODE, SYZYGY, PARS_FORTUNA, VERTEX,
 )
 
-ACTIVE = 'active'
-PASSIVE = 'passive'
-EQUAL = 'equal'
-
 ASSOCIATE = 'associate'
 DISSOCIATE = 'dissociate'
 
