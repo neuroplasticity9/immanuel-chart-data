@@ -36,7 +36,7 @@ class Aspect(Serializable):
         self.aspect = const.ASPECTS[aspect_type]
         self.distance = distance
         self._aspect_exact_lon = Angle(swe.degnorm(self.passive.longitude + (self.aspect if distance < 0 else -self.aspect)))
-        self.orb = self._aspect_exact_lon.diff(self.active.longitude)
+        self.orb = Angle(abs(distance) - self.aspect)
         self.movement = self._movement()
         self.condition = self._condition()
 
