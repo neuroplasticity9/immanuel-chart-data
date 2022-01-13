@@ -45,7 +45,7 @@ class Aspect(Serializable):
         or leaving its aspect with the passive body.
         """
         exact = self._aspect_exact_lon-const.EXACT_ORB <= self.active.longitude <= self._aspect_exact_lon+const.EXACT_ORB
-        applicative = not exact and (self.orb < 0 or self.active.movement[const.RETROGRADE])
+        applicative = not exact and ((self.orb < 0 if self.distance < 0 else self.orb > 0) or self.active.movement[const.RETROGRADE])
         separative = not exact and not applicative
 
         return SerializableBoolean({
