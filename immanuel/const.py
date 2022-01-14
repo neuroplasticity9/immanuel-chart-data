@@ -10,12 +10,13 @@
 import swisseph as swe
 
 
-# Chart types
+""" Chart types. """
 
 DIURNAL = 'diurnal'
 NOCTURNAL = 'nocturnal'
 
-# Chart item types
+
+""" Chart item types. """
 
 HOUSE = 'house'
 ANGLE = 'angle'
@@ -24,7 +25,8 @@ POINT = 'point'
 ASTEROID = 'asteroid'
 FIXED_STAR = 'fixed star'
 
-# Signs
+
+""" Signs. """
 
 ARIES = 'Aries'
 TAURUS = 'Taurus'
@@ -44,7 +46,8 @@ SIGNS = (
     SCORPIO, SAGITTARIUS, CAPRICORN, AQUARIUS, PISCES
 )
 
-# House systems
+
+""" House systems. """
 
 ALCABITUS = 'Alcabitus'
 AZIMUTHAL = 'Azimuthal'
@@ -76,7 +79,8 @@ HOUSE_SYSTEMS = {
     WHOLE_SIGN: b'W',
 }
 
-# Main angles
+
+""" Main angles. """
 
 ASC = 'Asc'
 DESC = 'Desc'
@@ -90,7 +94,8 @@ ANGLES = {
     IC: swe.MC,
 }
 
-# Planets
+
+""" Planets. """
 
 SUN = 'Sun'
 MOON = 'Moon'
@@ -116,7 +121,8 @@ PLANETS = {
     PLUTO: swe.PLUTO,
 }
 
-# Moon phases & their end positions relative to the Sun
+
+""" Moon phases & their end positions relative to the Sun. """
 
 NEW_MOON = 'new_moon'
 WAXING_CRESCENT = 'waxing_crescent'
@@ -138,7 +144,8 @@ MOON_PHASES = {
     BALSAMIC: 360,
 }
 
-# Points
+
+""" Points. """
 
 NORTH_NODE = 'North Node'
 SOUTH_NODE = 'South Node'
@@ -162,7 +169,8 @@ POINTS = {
     TRUE_LILITH: swe.OSCU_APOG,
 }
 
-# Asteroids
+
+""" Main asteroids available without extra ephemeris files. """
 
 CHIRON = 'Chiron'
 PHOLUS = 'Pholus'
@@ -180,7 +188,8 @@ ASTEROIDS = {
     VESTA: swe.VESTA,
 }
 
-# Default items
+
+""" Default items to return. """
 
 DEFAULT_ITEMS = [
     ASC, DESC, MC, IC,
@@ -189,7 +198,8 @@ DEFAULT_ITEMS = [
     CHIRON
 ]
 
-# All items
+
+""" All available items. """
 
 CHART_ITEMS = {
     **ANGLES,
@@ -198,7 +208,8 @@ CHART_ITEMS = {
     **ASTEROIDS,
 }
 
-# Astrological constants
+
+""" Astrological constants. """
 
 DECLINATION_BOUNDARY = 23.45
 
@@ -217,7 +228,8 @@ MEAN_MOTIONS = {
 
 STATION_SPEED = 0.0003      # ~1 second of movement
 
-# Movement & motion
+
+""" Movement & motion. """
 
 RETROGRADE = 'retrograde'
 STATION = 'station'
@@ -226,7 +238,8 @@ DIRECT = 'direct'
 SLOW = 'slow'
 FAST = 'fast'
 
-# Main essential dignities
+
+""" Main essential dignities """
 
 DOMICILE = 'domicile'
 EXALTED = 'exalted'
@@ -429,7 +442,15 @@ DIGNITY_SCORES = {
     DETRIMENT: -5,
 }
 
-# Aspects & orbs
+
+""" Aspects. """
+
+ASSOCIATE = 'associate'
+DISSOCIATE = 'dissociate'
+
+APPLICATIVE = 'applicative'
+EXACT = 'exact'
+SEPARATIVE = 'separative'
 
 CONJUNCTION = 'Conjunction'
 OPPOSITION = 'Opposition'
@@ -443,10 +464,6 @@ SEMISEXTILE = 'Semisextile'
 QUINCUNX = 'Quincunx'
 QUINTILE = 'Quintile'
 BIQUINTILE = 'Biquintile'
-
-DEFAULT_ASPECTS = (
-    CONJUNCTION, OPPOSITION, SQUARE, TRINE, SEXTILE, QUINCUNX
-)
 
 ASPECTS = {
     CONJUNCTION: 0.0,
@@ -463,20 +480,72 @@ ASPECTS = {
     BIQUINTILE: 144.0,
 }
 
-ANGLE_ORBS = {
-    CONJUNCTION: 1.0,
-    OPPOSITION: 1.0,
-    SQUARE: 1.0,
-    TRINE: 1.0,
-    SEXTILE: 1.0,
-    SEPTILE: 1.0,
-    SEMISQUARE: 1.0,
-    SESQUISQUARE: 1.0,
-    SEMISEXTILE: 1.0,
-    QUINCUNX: 1.0,
-    QUINTILE: 1.0,
-    BIQUINTILE: 1.0,
+MAJOR_ASPECTS = (
+    CONJUNCTION, OPPOSITION, SQUARE, TRINE, SEXTILE
+)
+
+MINOR_ASPECTS = (
+    SEPTILE, SEMISQUARE, SESQUISQUARE, SEMISEXTILE, QUINCUNX, QUINTILE, BIQUINTILE
+)
+
+ALL_ASPECTS = MAJOR_ASPECTS + MINOR_ASPECTS
+
+DEFAULT_ASPECTS = (*MAJOR_ASPECTS, QUINCUNX)
+
+
+""" Rules for which items can initiate and receive which aspects. """
+
+INITIATE = 'initiate'
+RECEIVE = 'receive'
+
+DEFAULT_ASPECT_RULE = {
+    INITIATE: ALL_ASPECTS,
+    RECEIVE: ALL_ASPECTS,
 }
+
+PLANET_ASPECT_RULE = {
+    INITIATE: ALL_ASPECTS,
+    RECEIVE: ALL_ASPECTS,
+}
+
+POINT_ASPECT_RULE = {
+    INITIATE: (CONJUNCTION,),
+    RECEIVE: ALL_ASPECTS,
+}
+
+DEFAULT_ASPECT_RULES = {
+    ASC: POINT_ASPECT_RULE,
+    DESC: POINT_ASPECT_RULE,
+    MC: POINT_ASPECT_RULE,
+    IC: POINT_ASPECT_RULE,
+
+    SUN: PLANET_ASPECT_RULE,
+    MOON: PLANET_ASPECT_RULE,
+    MERCURY: PLANET_ASPECT_RULE,
+    VENUS: PLANET_ASPECT_RULE,
+    MARS: PLANET_ASPECT_RULE,
+    JUPITER: PLANET_ASPECT_RULE,
+    SATURN: PLANET_ASPECT_RULE,
+    URANUS: PLANET_ASPECT_RULE,
+    NEPTUNE: PLANET_ASPECT_RULE,
+    PLUTO: PLANET_ASPECT_RULE,
+
+    NORTH_NODE: POINT_ASPECT_RULE,
+    SOUTH_NODE: POINT_ASPECT_RULE,
+    TRUE_NORTH_NODE: POINT_ASPECT_RULE,
+    TRUE_SOUTH_NODE: POINT_ASPECT_RULE,
+    SYZYGY: POINT_ASPECT_RULE,
+    PARS_FORTUNA: POINT_ASPECT_RULE,
+    VERTEX: POINT_ASPECT_RULE,
+    LILITH: POINT_ASPECT_RULE,
+    TRUE_LILITH: POINT_ASPECT_RULE,
+}
+
+
+""" Orbs. """
+
+DEFAULT_ORB = 1.0
+EXACT_ORB = 0.3
 
 PLANET_ORBS = {
     CONJUNCTION: 10.0,
@@ -494,28 +563,25 @@ PLANET_ORBS = {
 }
 
 POINT_ORBS = {
-    CONJUNCTION: 1.0,
-    OPPOSITION: 1.0,
-    SQUARE: 1.0,
-    TRINE: 1.0,
-    SEXTILE: 1.0,
-    SEPTILE: 1.0,
-    SEMISQUARE: 1.0,
-    SESQUISQUARE: 1.0,
-    SEMISEXTILE: 1.0,
-    QUINCUNX: 1.0,
-    QUINTILE: 1.0,
-    BIQUINTILE: 1.0,
+    CONJUNCTION: 0.0,
+    OPPOSITION: 0.0,
+    SQUARE: 0.0,
+    TRINE: 0.0,
+    SEXTILE: 0.0,
+    SEPTILE: 0.0,
+    SEMISQUARE: 0.0,
+    SESQUISQUARE: 0.0,
+    SEMISEXTILE: 0.0,
+    QUINCUNX: 0.0,
+    QUINTILE: 0.0,
+    BIQUINTILE: 0.0,
 }
 
-DEFAULT_ORB = 1.0
-EXACT_ORB = 0.3
-
 DEFAULT_ORBS = {
-    ASC: ANGLE_ORBS,
-    DESC: ANGLE_ORBS,
-    MC: ANGLE_ORBS,
-    IC: ANGLE_ORBS,
+    ASC: PLANET_ORBS,
+    DESC: PLANET_ORBS,
+    MC: PLANET_ORBS,
+    IC: PLANET_ORBS,
 
     SUN: PLANET_ORBS,
     MOON: PLANET_ORBS,
@@ -538,15 +604,3 @@ DEFAULT_ORBS = {
     LILITH: POINT_ORBS,
     TRUE_LILITH: POINT_ORBS,
 }
-
-PASSIVE_ONLY = (
-    ASC, DESC, MC, IC,
-    NORTH_NODE, SOUTH_NODE, TRUE_NORTH_NODE, TRUE_SOUTH_NODE, SYZYGY, PARS_FORTUNA, VERTEX,
-)
-
-ASSOCIATE = 'associate'
-DISSOCIATE = 'dissociate'
-
-APPLICATIVE = 'applicative'
-EXACT = 'exact'
-SEPARATIVE = 'separative'

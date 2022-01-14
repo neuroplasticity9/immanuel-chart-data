@@ -30,12 +30,17 @@ class Chart(Serializable):
 
     """
 
+    ORB_CALC_MEAN = 0
+    ORB_CALC_MAX = 1
+
     def __init__(self, dt: DateTime, lat: float, lon: float, hsys: str, kwargs):
         """ Set private members. """
         self._jd = dt.jd
         self._lat = lat
         self._lon = lon
         self._hsys = const.HOUSE_SYSTEMS[hsys if hsys is not None else const.PLACIDUS]
+        self._orb_calc = kwargs.get('orb_calc', self.ORB_CALC_MEAN)
+        self._aspect_rules = kwargs.get('aspect_rules', const.DEFAULT_ASPECT_RULES)
         self._show_items = kwargs.get('items', const.DEFAULT_ITEMS)
         self._show_aspects = kwargs.get('aspects', const.DEFAULT_ASPECTS)
         self._show_orbs = kwargs.get('orbs', const.DEFAULT_ORBS)
@@ -227,26 +232,32 @@ class Chart(Serializable):
 
         for item1_name, item1 in aspect_items.items():
             for item2_name, item2 in aspect_items.items():
+                # Avoid conjuncting the same item
                 if item1_name == item2_name:
                     continue
 
                 active, passive = aspects.active_passive(item1, item2)
 
-                if passive.name in item_aspects[active.name] or active.name in const.PASSIVE_ONLY:
+                # Avoid duplicates
+                if passive.name in item_aspects[active.name]:
                     continue
 
                 for aspect_type in self._show_aspects:
                     aspect_angle = const.ASPECTS[aspect_type]
-                    # TODO: check whether both orbs are fine or change to only active orb
                     active_orb = self._show_orbs[active.name][aspect_type] if active.name in self._show_orbs else const.DEFAULT_ORB
                     passive_orb = self._show_orbs[passive.name][aspect_type] if passive.name in self._show_orbs else const.DEFAULT_ORB
-                    orb = passive_orb if passive.name in const.PASSIVE_ONLY else max(active_orb, passive_orb)
+                    orb = (active_orb + passive_orb) / 2 if self._orb_calc == self.ORB_CALC_MEAN else max(active_orb, passive_orb)
                     distance = active.distance_to(passive)
 
                     if aspect_angle-orb <= abs(distance) <= aspect_angle+orb:
-                        aspect = Aspect(active, passive, aspect_type, distance)
-                        item_aspects[active.name][passive.name] = aspect
-                        item_aspects[passive.name][active.name] = aspect
+                        # Check the aspect rules & add if this aspect is allowed
+                        active_aspect_rule = self._aspect_rules[active.name] if active.name in self._aspect_rules else const.DEFAULT_ASPECT_RULE
+                        passive_aspect_rule = self._aspect_rules[passive.name] if passive.name in self._aspect_rules else const.DEFAULT_ASPECT_RULE
+
+                        if aspect_type in active_aspect_rule[const.INITIATE] and aspect_type in passive_aspect_rule[const.RECEIVE]:
+                            aspect = Aspect(active, passive, aspect_type, distance)
+                            item_aspects[active.name][passive.name] = aspect
+                            item_aspects[passive.name][active.name] = aspect
 
         return item_aspects
 
