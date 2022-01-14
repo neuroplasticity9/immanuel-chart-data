@@ -3,7 +3,8 @@
     Author: Robert Davies (robert@theriftlab.com)
 
 
-    This module provides simple classes for handling angles.
+    This module provides simple classes for handling angles. It utilises
+    the Decimal class to avoid any rounding errors.
 
     Use the Angle class for generic angles, and SignAngle for the
     chart items' angles that need to be split into signs.
@@ -44,43 +45,43 @@ class AngleBase(Serializable):
         return Angle(swe.difdeg2n(other._full, self._full)) if normalise == SHORTEST else Angle(swe.difdegn(other._full, self._full))
 
     def __add__(self, other: float | AngleBase) -> float:
-        return self._full + (other._full if isinstance(other, AngleBase) else other)
+        return float(Decimal(str(self._full)) + (Decimal(str(other._full if isinstance(other, AngleBase) else other))))
 
     def __radd__(self, other: float | AngleBase) -> float:
-        return (other._full if isinstance(other, AngleBase) else other) + self._full
+        return float((Decimal(str(other._full if isinstance(other, AngleBase) else other))) + Decimal(str(self._full)))
 
     def __sub__(self, other: float | AngleBase) -> float:
-        return self._full - (other._full if isinstance(other, AngleBase) else other)
+        return float(Decimal(str(self._full)) - (Decimal(str(other._full if isinstance(other, AngleBase) else other))))
 
     def __rsub__(self, other: float | AngleBase) -> float:
-        return (other._full if isinstance(other, AngleBase) else other) - self._full
+        return float((Decimal(str(other._full if isinstance(other, AngleBase) else other))) - Decimal(str(self._full)))
 
     def __truediv__(self, other: float | AngleBase) -> float:
-        return self._full / (other._full if isinstance(other, AngleBase) else other)
+        return float(Decimal(str(self._full)) / (Decimal(str(other._full if isinstance(other, AngleBase) else other))))
 
     def __floordiv__(self, other: float | AngleBase) -> int:
-        return self._full // (other._full if isinstance(other, AngleBase) else other)
+        return int(Decimal(str(self._full)) // (Decimal(str(other._full if isinstance(other, AngleBase) else other))))
 
     def __mod__(self, other: float | AngleBase) -> int:
-        return self._full % (other._full if isinstance(other, AngleBase) else other)
+        return int(Decimal(str(self._full)) % (Decimal(str(other._full if isinstance(other, AngleBase) else other))))
 
     def __lt__(self, other: float | AngleBase) -> bool:
-        return self._full < (other._full if isinstance(other, AngleBase) else other)
+        return Decimal(str(self._full)) < (Decimal(str(other._full if isinstance(other, AngleBase) else other)))
 
     def __le__(self, other: float | AngleBase) -> bool:
-        return self._full <= (other._full if isinstance(other, AngleBase) else other)
+        return Decimal(str(self._full)) <= (Decimal(str(other._full if isinstance(other, AngleBase) else other)))
 
     def __eq__(self, other: float | AngleBase) -> bool:
-        return self._full == (other._full if isinstance(other, AngleBase) else other)
+        return Decimal(str(self._full)) == (Decimal(str(other._full if isinstance(other, AngleBase) else other)))
 
     def __ne__(self, other: float | AngleBase) -> bool:
-        return self._full != (other._full if isinstance(other, AngleBase) else other)
+        return Decimal(str(self._full)) != (Decimal(str(other._full if isinstance(other, AngleBase) else other)))
 
     def __gt__(self, other: float | AngleBase) -> bool:
-        return self._full > (other._full if isinstance(other, AngleBase) else other)
+        return Decimal(str(self._full)) > (Decimal(str(other._full if isinstance(other, AngleBase) else other)))
 
     def __ge__(self, other: float | AngleBase) -> bool:
-        return self._full >= (other._full if isinstance(other, AngleBase) else other)
+        return Decimal(str(self._full)) >= (Decimal(str(other._full if isinstance(other, AngleBase) else other)))
 
     def __abs__(self) -> float:
         return abs(self._full)
