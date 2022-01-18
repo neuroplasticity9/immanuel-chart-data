@@ -37,27 +37,16 @@ class DateTime:
         self.jd = None
 
         if (isinstance(dt_jd, datetime)):
-            self._dt_instance(dt_jd, is_dst)
+            try:
+                self.datetime = timezone(self.timezone).localize(dt_jd, is_dst)
+                self.jd = datetime_to_jd(self.datetime)
+                self.dst_ambiguous = False
+            except exceptions.AmbiguousTimeError:
+                self.dst_ambiguous = True
         else:
-            self._jd_instance(dt_jd)
-
-    def _dt_instance(self, dt: datetime, is_dst: bool):
-        """ Accept a datetime object, localise it, and calculate the
-        universal Julian day. """
-        try:
-            self.datetime = timezone(self.timezone).localize(dt, is_dst)
-            self.jd = datetime_to_jd(self.datetime)
+            self.jd = dt_jd
+            self.datetime = jd_to_datetime(dt_jd).astimezone(timezone(self.timezone))
             self.dst_ambiguous = False
-        except exceptions.AmbiguousTimeError:
-            self.datetime = None
-            self.dst_ambiguous = True
-
-    def _jd_instance(self, jd: float):
-        """ Accept a universal Julian day and generate a localised
-        datetime object. """
-        self.jd = jd
-        self.datetime = jd_to_datetime(jd).astimezone(timezone(self.timezone))
-        self.dst_ambiguous = False
 
     def isoformat(self) -> str:
         """ Returns the underlying datetime object's ISO format. """
@@ -65,6 +54,9 @@ class DateTime:
 
     def __str__(self) -> str:
         """ Returns the full date with timezone string. """
+        if self.dst_ambiguous:
+            return 'Ambiguous Time Error'
+
         return f'{self.datetime.strftime("%a %d %b %Y %H:%M:%S")} {self.timezone}'
 
 
