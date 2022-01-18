@@ -19,8 +19,6 @@ import swisseph as swe
 from pytz import exceptions, timezone, UTC
 from timezonefinder import TimezoneFinder
 
-from immanuel import convert
-
 
 class DateTime:
     """ This class is instatiated with either a standard Python datetime
