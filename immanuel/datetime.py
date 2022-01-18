@@ -7,7 +7,7 @@
     between location-specific Gregorian dates and times, and universal
     Julian dates.
 
-    The class and functions essentially wrap pyswisseph's jul_day() and
+    The class and functions essentially wrap pyswisseph's utc_to_jd() and
     jdut1_to_utc() functions but take into account timezones based on
     lat/long coordinates and do the heavy lifting for you.
 
@@ -62,9 +62,8 @@ class DateTime:
 
 def datetime_to_jd(dt: datetime) -> float:
     """ Convert localised datetime into universal Julian day. """
-    dt = dt.astimezone(UTC)
-    hour = convert.dms_to_dec(['+', dt.hour, dt.minute, dt.second])
-    return swe.julday(dt.year, dt.month, dt.day, hour)
+    utc_dt = dt.astimezone(UTC)
+    return swe.utc_to_jd(utc_dt.year, utc_dt.month, utc_dt.day, utc_dt.hour, utc_dt.minute, utc_dt.second)[1]
 
 
 def jd_to_datetime(jd: float) -> datetime:
@@ -73,5 +72,5 @@ def jd_to_datetime(jd: float) -> datetime:
     seconds_float = swe_utc[5]
     seconds = int(seconds_float)
     microseconds = round((seconds_float - seconds) * 1000)
-    utc = swe_utc[:5] + (seconds, microseconds)
-    return datetime(*utc, tzinfo=UTC)
+    dt_utc = swe_utc[:5] + (seconds, microseconds)
+    return datetime(*dt_utc, tzinfo=UTC)
