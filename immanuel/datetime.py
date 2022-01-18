@@ -46,11 +46,11 @@ class DateTime:
         universal Julian day. """
         try:
             self.datetime = timezone(self.timezone).localize(dt, is_dst)
+            self.jd = datetime_to_jd(self.datetime)
+            self.dst_ambiguous = False
         except exceptions.AmbiguousTimeError:
             self.datetime = None
-
-        self.jd = datetime_to_jd(self.datetime) if self.datetime is not None else None
-        self.dst_ambiguous = self.datetime is None
+            self.dst_ambiguous = True
 
     def _jd_instance(self, jd: float):
         """ Accept a universal Julian day and generate a localised
