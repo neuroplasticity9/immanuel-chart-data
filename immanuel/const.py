@@ -226,7 +226,9 @@ MEAN_MOTIONS = {
     PLUTO: 0.004167,
 }
 
-STATION_SPEED = 0.0003      # ~1 second of movement
+MAX_ERROR = 0.000001                        # For precise exact conjunctions
+STATION_SPEED = 0.0003                      # ~1 second of movement
+JULIAN_INTERVAL = 1 / 24 / 60 / 60 / 10     # ~1/10 second of time
 
 
 """ Movement & motion. """
@@ -239,7 +241,7 @@ SLOW = 'slow'
 FAST = 'fast'
 
 
-""" Main essential dignities """
+""" Main essential dignities. """
 
 DOMICILE = 'domicile'
 EXALTED = 'exalted'

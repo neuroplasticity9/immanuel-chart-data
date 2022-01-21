@@ -8,7 +8,9 @@
 
 """
 
-from immanuel import convert, ephemeris
+import swisseph as swe
+
+from immanuel import const, convert, ephemeris
 from immanuel.datetime import DateTime
 from immanuel.chart import Chart
 
@@ -17,6 +19,7 @@ class Generator:
     def __init__(self, dt, lat, lon, hsys = None, **kwargs):
         """ Standardise input ready for Chart class. """
         self._lat, self._lon = (convert.string_to_dec(v) for v in (lat, lon))
+        self._datetime = dt
         self._dt = DateTime(dt, self._lat, self._lon)
         self._hsys = hsys
         self._kwargs = kwargs
@@ -30,13 +33,30 @@ class Generator:
             else:
                 raise Exception('Missing named argument "ephemeris" for asteroid ephemeris location.')
 
-    def chart(self):
-        # Natal / transit
+    def chart(self) -> Chart:
+        """ Returns a Chart object for the given details. """
         return Chart(self._dt, self._lat, self._lon, self._hsys, self._kwargs)
 
-    def solar_return_chart(self, year):
-        # TODO: find solar return date
-        return Chart(self._dt, self._lat, self._lon, self._hsys)
+    def solar_return_chart(self, year: int, lat = None, lon = None) -> Chart:
+        """ Returns a solar return chart for the given year. """
+        lat, lon = (convert.string_to_dec(v) for v in (lat, lon)) if lat and lon else (self._lat, self._lon)
+        year_jd = DateTime(self._datetime.replace(year=year), self._lat, self._lon).jd
+        # Get the sun's position & speed for both birthdays
+        natal_res, _ = swe.calc_ut(self._dt.jd, const.PLANETS[const.SUN])
+        year_res, _ = swe.calc_ut(year_jd, const.PLANETS[const.SUN])
+        natal_lon, _, _, natal_speed = natal_res[:4]
+        year_lon, _, _, year_speed = year_res[:4]
+        # Begin with an approximate calculation
+        distance = swe.difdeg2n(year_lon, natal_lon)
+        jd = year_jd - (distance / min(natal_speed, year_speed))
+        # Narrow it down
+        while abs(distance) > const.MAX_ERROR:
+            jd += const.JULIAN_INTERVAL if distance < 0 else -const.JULIAN_INTERVAL
+            sr_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
+            distance = swe.difdeg2n(sr_lon, natal_lon)
+        # Generate a chart
+        dt = DateTime(jd, lat, lon)
+        return Chart(dt, lat, lon, self._hsys, self._kwargs)
 
     def progressed_chart(self, date_str, lat, lon):
         # TODO: date/time/coords - calculate progressions
