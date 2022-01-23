@@ -21,7 +21,6 @@ class Generator:
     def __init__(self, dt: datetime, lat: float, lon: float, hsys = None, **kwargs):
         """ Standardise input ready for Chart class. """
         self._lat, self._lon = (convert.string_to_dec(v) for v in (lat, lon))
-        self._datetime = dt
         self._dt = DateTime(dt, self._lat, self._lon)
         self._hsys = hsys
         self._kwargs = kwargs
