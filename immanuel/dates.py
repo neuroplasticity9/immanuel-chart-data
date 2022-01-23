@@ -30,20 +30,20 @@ class DateTime:
 
     def __init__(self, dt_jd: datetime | float, lat: float, lon: float, is_dst: bool = None):
         self.datetime = None
-        self.timezone = TimezoneFinder().certain_timezone_at(lat=lat, lng=lon)
+        self.timezone = timezone(TimezoneFinder().certain_timezone_at(lat=lat, lng=lon))
         self.dst_ambiguous = None
         self.jd = None
 
         if (isinstance(dt_jd, datetime)):
             try:
-                self.datetime = timezone(self.timezone).localize(dt_jd, is_dst)
+                self.datetime = self.timezone.localize(dt_jd, is_dst)
                 self.jd = datetime_to_jd(self.datetime)
                 self.dst_ambiguous = False
             except exceptions.AmbiguousTimeError:
                 self.dst_ambiguous = True
         else:
             self.jd = dt_jd
-            self.datetime = jd_to_datetime(dt_jd).astimezone(timezone(self.timezone))
+            self.datetime = jd_to_datetime(dt_jd).astimezone(self.timezone)
             self.dst_ambiguous = False
 
     def isoformat(self) -> str:
@@ -55,7 +55,7 @@ class DateTime:
         if self.dst_ambiguous:
             return 'Ambiguous Time Error'
 
-        return f'{self.datetime.strftime("%a %d %b %Y %H:%M:%S")} {self.timezone}'
+        return f'{self.datetime.strftime("%a %d %b %Y %H:%M:%S")} {self.timezone.zone}'
 
 
 def datetime_to_jd(dt: datetime) -> float:
