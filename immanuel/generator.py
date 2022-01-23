@@ -9,12 +9,13 @@
 """
 
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 import swisseph as swe
 
-from immanuel import const, convert, ephemeris
-from immanuel.datetime import DateTime
+from immanuel import const, convert, dates, ephemeris
 from immanuel.chart import Chart
+from immanuel.dates import DateTime
 
 
 class Generator:
@@ -56,9 +57,16 @@ class Generator:
         dt = DateTime(jd, lat, lon)
         return Chart(dt, lat, lon, self._hsys, self._kwargs)
 
-    def progressed_chart(self, date_str, lat, lon):
-        # TODO: date/time/coords - calculate progressions
-        return Chart(self._dt, self._lat, self._lon, self._hsys)
+    def progressed_chart(self, dt: datetime, lat: float = None, lon: float = None) -> Chart:
+        """ Calculates the number of years-as-days and returns a secondary
+        progression chart. """
+        lat, lon = (convert.string_to_dec(v) for v in (lat, lon)) if lat and lon else (self._lat, self._lon)
+        progression_dt = DateTime(dt, lat, lon)
+        days_diff = dates.datetime_to_jd(progression_dt) - dates.datetime_to_jd(self._dt)
+        as_years = days_diff / const.YEAR_DAYS
+        dt = DateTime(self._dt.datetime + relativedelta(days=as_years), lat, lon)
+        # TODO: relocate angles / houses
+        return Chart(dt, lat, lon, self._hsys, self._kwargs)
 
     def composite_chart(self, generator):
         # TODO: mix & relocate
