@@ -69,6 +69,6 @@ def jd_to_datetime(jd: float) -> datetime:
     swe_utc = swe.jdut1_to_utc(jd)
     seconds_float = swe_utc[5]
     seconds = int(seconds_float)
-    microseconds = round((seconds_float - seconds) * 1000)
+    microseconds = round((seconds_float - seconds) * 1000000)
     dt_utc = swe_utc[:5] + (seconds, microseconds)
     return datetime(*dt_utc, tzinfo=UTC)
