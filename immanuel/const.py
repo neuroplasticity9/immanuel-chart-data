@@ -228,7 +228,7 @@ MEAN_MOTIONS = {
 
 MAX_ERROR = 0.000001                        # For precise exact conjunctions
 STATION_SPEED = 0.0003                      # ~1 second of movement
-JULIAN_INTERVAL = 1 / 24 / 60 / 60 / 10     # ~1/10 second of time
+YEAR_DAYS = 365.242196
 
 
 """ Movement & motion. """

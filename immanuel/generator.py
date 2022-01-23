@@ -8,6 +8,8 @@
 
 """
 
+from datetime import datetime
+
 import swisseph as swe
 
 from immanuel import const, convert, ephemeris
@@ -16,7 +18,7 @@ from immanuel.chart import Chart
 
 
 class Generator:
-    def __init__(self, dt, lat, lon, hsys = None, **kwargs):
+    def __init__(self, dt: datetime, lat: float, lon: float, hsys = None, **kwargs):
         """ Standardise input ready for Chart class. """
         self._lat, self._lon = (convert.string_to_dec(v) for v in (lat, lon))
         self._datetime = dt
@@ -37,24 +39,21 @@ class Generator:
         """ Returns a Chart object for the given details. """
         return Chart(self._dt, self._lat, self._lon, self._hsys, self._kwargs)
 
-    def solar_return_chart(self, year: int, lat = None, lon = None) -> Chart:
+    def solar_return_chart(self, year: int, lat: float = None, lon: float = None) -> Chart:
         """ Returns a solar return chart for the given year. """
+        year_diff = year - self._dt.datetime.year
+        jd = self._dt.jd + year_diff * const.YEAR_DAYS
+        natal_lon = swe.calc_ut(self._dt.jd, const.PLANETS[const.SUN])[0][0]
+
+        while True:
+            sr_res = swe.calc_ut(jd, const.PLANETS[const.SUN])[0]
+            sr_lon, sr_speed = sr_res[0], sr_res[3]
+            distance = swe.difdeg2n(natal_lon, sr_lon)
+            if abs(distance) <= const.MAX_ERROR:
+                break
+            jd += distance / sr_speed
+
         lat, lon = (convert.string_to_dec(v) for v in (lat, lon)) if lat and lon else (self._lat, self._lon)
-        year_jd = DateTime(self._datetime.replace(year=year), self._lat, self._lon).jd
-        # Get the sun's position & speed for both birthdays
-        natal_res, _ = swe.calc_ut(self._dt.jd, const.PLANETS[const.SUN])
-        year_res, _ = swe.calc_ut(year_jd, const.PLANETS[const.SUN])
-        natal_lon, _, _, natal_speed = natal_res[:4]
-        year_lon, _, _, year_speed = year_res[:4]
-        # Begin with an approximate calculation
-        distance = swe.difdeg2n(year_lon, natal_lon)
-        jd = year_jd - (distance / min(natal_speed, year_speed))
-        # Narrow it down
-        while abs(distance) > const.MAX_ERROR:
-            jd += const.JULIAN_INTERVAL if distance < 0 else -const.JULIAN_INTERVAL
-            sr_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
-            distance = swe.difdeg2n(sr_lon, natal_lon)
-        # Generate a chart
         dt = DateTime(jd, lat, lon)
         return Chart(dt, lat, lon, self._hsys, self._kwargs)
 
