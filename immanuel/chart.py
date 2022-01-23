@@ -18,7 +18,7 @@ import swisseph as swe
 
 from immanuel import angles, aspects, const, convert, transits
 from immanuel.aspects import Aspect
-from immanuel.datetime import DateTime
+from immanuel.dates import DateTime
 from immanuel.items import House, AxisAngle, Planet, Point, Asteroid, FixedStar
 from immanuel.serializable import Serializable, SerializableBoolean, SerializableDict
 
