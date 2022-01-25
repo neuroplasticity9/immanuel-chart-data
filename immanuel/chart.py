@@ -54,6 +54,7 @@ class Chart(Serializable):
         self.longitude = convert.dec_to_string(lon, convert.FORMAT_LON)
         self.type = self._type()
         self.moon_phase = self._moon_phase()
+        self.obliquity = self._obliquity()
         self.houses = self._houses()
         self.angles = self._angles()
         self.planets = self._planets()
@@ -114,8 +115,9 @@ class Chart(Serializable):
             eq_res, _ = swe.calc_ut(self._jd, planet, swe.FLG_EQUATORIAL)
             lon, lat, dist, speed = ec_res[:4]
             dec = eq_res[1]
+            out_of_bounds = abs(dec) > self.obliquity
             house = self._get_house(lon)
-            planets[name] = Planet(name, house, lon, lat, dist, speed, dec)
+            planets[name] = Planet(name, house, lon, lat, dist, speed, dec, out_of_bounds)
 
         return planets
 
@@ -272,6 +274,10 @@ class Chart(Serializable):
                 break
 
         return SerializableBoolean({k: k == phase for k, v in const.MOON_PHASES.items()})
+
+    def _obliquity(self) -> bool:
+        """ Get Earth's equatorial obliquity. """
+        return swe.calc_ut(self._jd, swe.ECL_NUT)[0][0]
 
     def _get_house(self, lon: float) -> int:
         """ Returns which house a given longitude appears in. """

@@ -112,8 +112,3 @@ def is_term_ruler(name: str, lon: float) -> bool:
             return True
 
     return False
-
-
-def is_out_of_bounds(dec: float) -> bool:
-    """ Returns whether the passed declination is out of bounds. """
-    return abs(dec) > const.DECLINATION_BOUNDARY

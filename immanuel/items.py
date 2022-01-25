@@ -66,14 +66,14 @@ class House(Item):
 
 
 class Planet(Item):
-    def __init__(self, name, house, lon, lat, dist, speed, dec):
+    def __init__(self, name, house, lon, lat, dist, speed, dec, out_of_bounds):
         super().__init__(name, lon, speed)
         self.type = const.PLANET
         self.house = house
         self.latitude = Angle(lat)
         self.declination = Angle(dec)
         self.distance = dist
-        self.out_of_bounds = position.is_out_of_bounds(dec)
+        self.out_of_bounds = out_of_bounds
         self.motion = Motion(speed, name)
         self.dignities = Dignities(lon, name)
 

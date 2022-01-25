@@ -211,8 +211,6 @@ CHART_ITEMS = {
 
 """ Astrological constants. """
 
-DECLINATION_BOUNDARY = 23.45
-
 MEAN_MOTIONS = {
     SUN: 0.985556,
     MOON: 13.176389,
