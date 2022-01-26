@@ -23,7 +23,7 @@ class Generator:
         """ Standardise input ready for Chart class. """
         self._lat, self._lon = (convert.string_to_dec(v) for v in (lat, lon))
         self._dt = DateTime(dt, self._lat, self._lon)
-        self._hsys = hsys
+        self._hsys = const.HOUSE_SYSTEMS[hsys if hsys is not None else const.PLACIDUS]
         self._kwargs = kwargs
 
         """ Set up extra ephemeris file location if extra asteroids
@@ -65,8 +65,17 @@ class Generator:
         days_diff = dates.datetime_to_jd(progression_dt) - dates.datetime_to_jd(self._dt)
         as_years = days_diff / const.YEAR_DAYS
         dt = DateTime(self._dt.datetime + relativedelta(days=as_years), lat, lon)
-        # TODO: relocate angles / houses
-        return Chart(dt, lat, lon, self._hsys, self._kwargs)
+
+        armc = swe.houses_ex2(self._dt.jd, lat, lon, self._hsys)[1][swe.ARMC]
+        armc += as_years * const.MEAN_MOTIONS[const.SUN]
+        obliquity = swe.calc_ut(dt.jd, swe.ECL_NUT)[0][0]
+
+        kwargs = {
+            **self._kwargs,
+            'swe_houses_angles': swe.houses_armc_ex2(armc, lat, obliquity, self._hsys),
+        }
+
+        return Chart(dt, lat, lon, self._hsys, kwargs)
 
     def composite_chart(self, generator):
         # TODO: mix & relocate

@@ -38,7 +38,7 @@ class Chart(Serializable):
         self._jd = dt.jd
         self._lat = lat
         self._lon = lon
-        self._hsys = const.HOUSE_SYSTEMS[hsys if hsys is not None else const.PLACIDUS]
+        self._hsys = hsys
         self._orb_calc = kwargs.get('orb_calc', self.ORB_CALC_MEAN)
         self._aspect_rules = kwargs.get('aspect_rules', const.DEFAULT_ASPECT_RULES)
         self._show_items = kwargs.get('items', const.DEFAULT_ITEMS)
@@ -46,7 +46,7 @@ class Chart(Serializable):
         self._show_orbs = kwargs.get('orbs', const.DEFAULT_ORBS)
         self._extra_asteroids = kwargs.get('asteroids', ())
         self._stars = kwargs.get('stars', ())
-        self._swe_houses_angles = self._get_swe_houses_angles()
+        self._swe_houses_angles = self._get_swe_houses_angles(kwargs.get('swe_houses_angles', None))
 
         """ Set public members. """
         self.date = dt.isoformat()
@@ -63,9 +63,10 @@ class Chart(Serializable):
         self.fixed_stars = self._fixed_stars()
         self.aspects = self._aspects()
 
-    def _get_swe_houses_angles(self) -> dict:
+    def _get_swe_houses_angles(self, swe_houses_angles: tuple = None) -> dict:
         """ This must be called first before the other chart methods. """
-        return dict(zip(('cusps', 'ascmc', 'cuspsspeed', 'ascmcspeed'), swe.houses_ex2(self._jd, self._lat, self._lon, self._hsys)))
+        houses_angles = swe_houses_angles if swe_houses_angles is not None else swe.houses_ex2(self._jd, self._lat, self._lon, self._hsys)
+        return dict(zip(('cusps', 'ascmc', 'cuspsspeed', 'ascmcspeed'), houses_angles))
 
     def _type(self) -> SerializableBoolean:
         """ Determine whether this is a day or a night chart. """
