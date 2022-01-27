@@ -85,19 +85,3 @@ class Generator:
     def synastry_charts(self, generator):
         # TODO: return 2 charts with aspects to each other
         return Chart(generator.dt, generator.lat, generator.lon, self._hsys)
-
-    def prenatal_lunar_eclipse_chart(self):
-        # TODO: find eclipse date
-        return Chart(self._dt, self._lat, self._lon, self._hsys)
-
-    def postnatal_lunar_eclipse_chart(self):
-        # TODO: find eclipse date
-        return Chart(self._dt, self._lat, self._lon, self._hsys)
-
-    def prenatal_solar_eclipse_chart(self):
-        # TODO: find eclipse date
-        return Chart(self._dt, self._lat, self._lon, self._hsys)
-
-    def postnatal_solar_eclipse_chart(self):
-        # TODO: find eclipse date
-        return Chart(self._dt, self._lat, self._lon, self._hsys)
