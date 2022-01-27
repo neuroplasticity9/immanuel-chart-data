@@ -67,19 +67,16 @@ def dms_to_string(dms: list | tuple, format: int = FORMAT_DMS) -> str:
 
 
 def string_to_dms(string: str) -> tuple:
-    """ Takes either a float, a float-as-string, a 12w34.56-type string,
-    or a 12°34'56.78" / 12:34:56.78-type string, and returns a float. """
-    try:
-        return float(string)
-    except ValueError:
-        digits = re.findall(r'[0-9\.-]+', string)
-        floats = [float(v) for v in digits]
-        char = string[len(digits[0])].upper()
+    """ Takes either a 12w34.56-type string, or a 12°34'56.78" / 12:34:56.78
+    type string, and returns a DMS tuple. """
+    digits = re.findall(r'[0-9\.-]+', string)
+    floats = [float(v) for v in digits]
+    char = string[len(digits[0])].upper()
 
-        if char in 'NESW':
-            return ('-' if char in 'SW' else '+', *floats)
-        else:
-            return ('-' if floats[0] < 0 else '+', abs(floats[0]), *floats[1:])
+    if char in 'NESW':
+        return ('-' if char in 'SW' else '+', *floats)
+    else:
+        return ('-' if floats[0] < 0 else '+', abs(floats[0]), *floats[1:])
 
 
 def dec_to_string(dec: float, format: int = FORMAT_DMS, round_to: tuple = ROUND_SECOND) -> str:
@@ -88,4 +85,7 @@ def dec_to_string(dec: float, format: int = FORMAT_DMS, round_to: tuple = ROUND_
 
 
 def string_to_dec(string: str) -> str:
-    return dms_to_dec(string_to_dms(string))
+    try:
+        return float(string)
+    except ValueError:
+        return dms_to_dec(string_to_dms(string))
