@@ -44,20 +44,18 @@ def next(first: str, second: str, jd: float, aspect: str) -> float:
 
 
 def _find(first: str, second: str, aspect: str, jd: float, direction: int) -> float:
-    """ Polls the ephemeris with minute-by-minute Julian dates until a close
-    aspect match is found - accurate to within a few seconds of a degree. """
-    step = (1 if direction == NEXT else -1) / 1440
-
+    """ Polls the ephemeris with a new Julian date based on a maximum of
+    one-minute increments. Accurate to within one second of a degree. """
     while True:
         first_lon = swe.calc_ut(jd, const.CHART_ITEMS[first])[0][0]
         second_lon = swe.calc_ut(jd, const.CHART_ITEMS[second])[0][0]
         distance = abs(swe.difdeg2n(first_lon, second_lon))
+        diff = abs(const.ASPECTS[aspect] - distance)
 
-        if round(distance, 2) == const.ASPECTS[aspect]:
+        if diff <= const.MAX_ERROR:
             return jd
 
-        jd += step
-
+        jd += (1 if direction == NEXT else -1) / max(180 / diff, 1440)
 
 def previous_new_moon(jd: float) -> float:
     """ Fast rewind to approximate conjunction. """
