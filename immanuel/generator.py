@@ -66,13 +66,14 @@ class Generator:
         as_years = days_diff / const.YEAR_DAYS
         dt = DateTime(self._dt.datetime + relativedelta(days=as_years), lat, lon)
 
-        armc = swe.houses_ex2(self._dt.jd, lat, lon, self._hsys)[1][swe.ARMC]
+        armc = swe.houses_ex2(self._dt.jd, self._lat, self._lon, self._hsys)[1][swe.ARMC]
         armc += as_years * const.MEAN_MOTIONS[const.SUN]
         obliquity = swe.calc_ut(dt.jd, swe.ECL_NUT)[0][0]
+        swe_angles_houses = swe.houses_armc_ex2(armc, lat, obliquity, self._hsys)
 
         kwargs = {
             **self._kwargs,
-            'swe_houses_angles': swe.houses_armc_ex2(armc, lat, obliquity, self._hsys),
+            'swe_houses_angles': swe_angles_houses,
         }
 
         return Chart(dt, lat, lon, self._hsys, kwargs)
