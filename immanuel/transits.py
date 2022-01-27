@@ -12,11 +12,11 @@
     requested aspect took place. This calculation tends to be expensive,
     especially for slow planets.
 
-    The previous new and full moon functions are designed to fast-forward
-    to the closest approximation of each aspect before handing off to
-    _find()'s loop. Since the Sun and Moon have relatively stable daily
-    motions and never retrograde, these are the only two bodies predictable
-    enough to safely perform this with.
+    The previous/next new and full moon functions are designed to
+    fast-rewind and fast-forward to a close approximation of each aspect
+    before handing off to _find()'s loop. Since the Sun and Moon have
+    relatively stable daily motions and never retrograde, these are the only
+    two bodies predictable enough to safely perform this with.
 
 """
 
@@ -60,6 +60,24 @@ def previous_full_moon(jd: float) -> float:
     distance = swe.difdeg2n(moon_lon, sun_lon) + 180
     jd -= math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
     return previous(const.SUN, const.MOON, const.OPPOSITION, jd)
+
+
+def next_new_moon(jd: float) -> float:
+    """ Fast forward to approximate conjunction. """
+    sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
+    moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
+    distance = swe.difdegn(sun_lon, moon_lon)
+    jd += math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
+    return next(const.SUN, const.MOON, const.CONJUNCTION, jd)
+
+
+def next_full_moon(jd: float) -> float:
+    """ Fast forward to approximate opposition. """
+    sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
+    moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
+    distance = 180 - swe.difdeg2n(moon_lon, sun_lon)
+    jd += math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
+    return next(const.SUN, const.MOON, const.OPPOSITION, jd)
 
 
 def _find(first: str, second: str, aspect: str, jd: float, direction: int) -> float:
