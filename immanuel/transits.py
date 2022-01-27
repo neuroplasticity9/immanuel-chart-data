@@ -31,16 +31,35 @@ from immanuel.items import Item
 PREVIOUS = 0
 NEXT = 1
 
-def previous(first: str, second: str, jd: float, aspect: str) -> float:
+
+def previous(first: str, second: str, aspect: str, jd: float) -> float:
     """ Returns the Julian day of the requested transit previous
     to the passed Julian day. """
     return _find(first, second, aspect, jd, PREVIOUS)
 
 
-def next(first: str, second: str, jd: float, aspect: str) -> float:
+def next(first: str, second: str, aspect: str, jd: float) -> float:
     """ Returns the Julian day of the requested transit after
     the passed Julian day. """
     return _find(first, second, aspect, jd, NEXT)
+
+
+def previous_new_moon(jd: float) -> float:
+    """ Fast rewind to approximate conjunction. """
+    sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
+    moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
+    distance = swe.difdegn(moon_lon, sun_lon)
+    jd -= math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
+    return previous(const.SUN, const.MOON, const.CONJUNCTION, jd)
+
+
+def previous_full_moon(jd: float) -> float:
+    """ Fast rewind to approximate opposition. """
+    sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
+    moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
+    distance = swe.difdeg2n(moon_lon, sun_lon) + 180
+    jd -= math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
+    return previous(const.SUN, const.MOON, const.OPPOSITION, jd)
 
 
 def _find(first: str, second: str, aspect: str, jd: float, direction: int) -> float:
@@ -56,22 +75,3 @@ def _find(first: str, second: str, aspect: str, jd: float, direction: int) -> fl
             return jd
 
         jd += (1 if direction == NEXT else -1) / max(180 / diff, 24)
-
-
-def previous_new_moon(jd: float) -> float:
-    """ Fast rewind to approximate conjunction. """
-    sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
-    moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
-    distance = swe.difdegn(moon_lon, sun_lon)
-    jd -= math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
-    return _find(const.SUN, const.MOON, const.CONJUNCTION, jd, PREVIOUS)
-
-
-def previous_full_moon(jd: float) -> float:
-    """ Fast rewind to approximate opposition. """
-    sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
-    moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
-    distance = swe.difdegn(moon_lon, sun_lon)
-    distance += 180 if distance < 180 else -180
-    jd -= math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
-    return _find(const.SUN, const.MOON, const.OPPOSITION, jd, PREVIOUS)
