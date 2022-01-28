@@ -43,10 +43,10 @@ class Generator:
         """ Returns a solar return chart for the given year. """
         year_diff = year - self._dt.datetime.year
         jd = self._dt.jd + year_diff * const.YEAR_DAYS
-        natal_lon = swe.calc_ut(self._dt.jd, const.PLANETS[const.SUN])[0][0]
+        natal_lon = swe.calc_ut(self._dt.jd, swe.SUN)[0][0]
 
         while True:
-            sr_res = swe.calc_ut(jd, const.PLANETS[const.SUN])[0]
+            sr_res = swe.calc_ut(jd, swe.SUN)[0]
             sr_lon, sr_speed = sr_res[0], sr_res[3]
             distance = swe.difdeg2n(natal_lon, sr_lon)
             if abs(distance) <= const.MAX_ERROR:
@@ -79,12 +79,11 @@ class Generator:
                 armc = swe.houses_ex2(self._dt.jd, self._lat, self._lon, self._hsys)[1][swe.ARMC]
                 armc += as_years * const.MEAN_MOTIONS[const.SUN]
             case const.SOLAR_ARC:
-                mc = swe.houses_ex2(self._dt.jd, self._lat, self._lon, self._hsys)[1][swe.MC]
-                natal_lon = swe.calc_ut(self._dt.jd, const.PLANETS[const.SUN])[0][0]
-                pr_lon = swe.calc_ut(dt.jd, const.PLANETS[const.SUN])[0][0]
-                distance = swe.difdeg2n(pr_lon, natal_lon)
-                mc += distance
-                armc = swe.cotrans((mc, 0, 0), obliquity)[0]
+                natal_mc = swe.houses_ex2(self._dt.jd, self._lat, self._lon, self._hsys)[1][swe.MC]
+                natal_sun = swe.calc_ut(self._dt.jd, swe.SUN)[0][0]
+                pr_sun = swe.calc_ut(dt.jd, swe.SUN)[0][0]
+                distance = swe.difdeg2n(pr_sun, natal_sun)
+                armc = swe.cotrans((natal_mc + distance, 0, 1), -obliquity)[0]
 
         chart_kwargs = {
             **self._kwargs,
