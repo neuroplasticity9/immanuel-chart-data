@@ -604,3 +604,10 @@ DEFAULT_ORBS = {
     LILITH: POINT_ORBS,
     TRUE_LILITH: POINT_ORBS,
 }
+
+
+""" MC progression methods. """
+
+NAIBOD = 'Naibod'
+SOLAR_ARC = 'Solar Arc'
+DAILY_HOUSES = 'Daily Houses'

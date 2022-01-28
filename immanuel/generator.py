@@ -57,7 +57,7 @@ class Generator:
         dt = DateTime(jd, lat, lon)
         return Chart(dt, lat, lon, self._hsys, self._kwargs)
 
-    def progressed_chart(self, dt: datetime, lat: float = None, lon: float = None) -> Chart:
+    def progressed_chart(self, dt: datetime, lat: float = None, lon: float = None, **kwargs) -> Chart:
         """ Calculates the number of years-as-days and returns a secondary
         progression chart. """
         lat, lon = (convert.string_to_dec(v) for v in (lat, lon)) if lat and lon else (self._lat, self._lon)
@@ -66,17 +66,32 @@ class Generator:
         as_years = days_diff / const.YEAR_DAYS
         dt = DateTime(self._dt.datetime + relativedelta(days=as_years), lat, lon)
 
-        armc = swe.houses_ex2(self._dt.jd, self._lat, self._lon, self._hsys)[1][swe.ARMC]
-        armc += as_years * const.MEAN_MOTIONS[const.SUN]
-        obliquity = swe.calc_ut(dt.jd, swe.ECL_NUT)[0][0]
-        swe_angles_houses = swe.houses_armc_ex2(armc, lat, obliquity, self._hsys)
+        # Calculate the house progressions separately.
+        method = kwargs.get('method', const.NAIBOD)
 
-        kwargs = {
+        if (method == const.DAILY_HOUSES):
+            return Chart(dt, lat, lon, self._hsys, self._kwargs)
+
+        obliquity = swe.calc_ut(dt.jd, swe.ECL_NUT)[0][0]
+
+        match method:
+            case const.NAIBOD:
+                armc = swe.houses_ex2(self._dt.jd, self._lat, self._lon, self._hsys)[1][swe.ARMC]
+                armc += as_years * const.MEAN_MOTIONS[const.SUN]
+            case const.SOLAR_ARC:
+                mc = swe.houses_ex2(self._dt.jd, self._lat, self._lon, self._hsys)[1][swe.MC]
+                natal_lon = swe.calc_ut(self._dt.jd, const.PLANETS[const.SUN])[0][0]
+                pr_lon = swe.calc_ut(dt.jd, const.PLANETS[const.SUN])[0][0]
+                distance = swe.difdeg2n(pr_lon, natal_lon)
+                mc += distance
+                armc = swe.cotrans((mc, 0, 0), obliquity)[0]
+
+        chart_kwargs = {
             **self._kwargs,
-            'swe_houses_angles': swe_angles_houses,
+            'swe_houses_angles': swe.houses_armc_ex2(armc, lat, obliquity, self._hsys),
         }
 
-        return Chart(dt, lat, lon, self._hsys, kwargs)
+        return Chart(dt, lat, lon, self._hsys, chart_kwargs)
 
     def composite_chart(self, generator):
         # TODO: mix & relocate
