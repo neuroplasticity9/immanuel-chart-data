@@ -75,7 +75,7 @@ def next_full_moon(jd: float) -> float:
     """ Fast forward to approximate opposition. """
     sun_lon = swe.calc_ut(jd, const.PLANETS[const.SUN])[0][0]
     moon_lon = swe.calc_ut(jd, const.PLANETS[const.MOON])[0][0]
-    distance = 180 - swe.difdeg2n(moon_lon, sun_lon)
+    distance = swe.difdeg2n(sun_lon, moon_lon) + 180
     jd += math.floor(distance) / math.ceil(const.MEAN_MOTIONS[const.MOON])
     return next(const.SUN, const.MOON, const.OPPOSITION, jd)
 
