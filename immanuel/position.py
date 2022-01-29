@@ -43,22 +43,28 @@ class Motion(SerializableBoolean):
 
 
 class Dignities(SerializableBoolean):
-    """ Stores which of the main essential dignities applies to the
-    passed item, if any.
+    """ Stores which of the main essential dignities or debilities applies
+    to the passed item, if any.
 
     """
     def __init__(self, lon: float, name: str):
-        self.data({
+        data = {
             const.DOMICILE: is_domicile(name, lon),
             const.EXALTED: is_exalted(name, lon),
-            const.DETRIMENT: is_in_detriment(name, lon),
-            const.FALL: is_in_fall(name, lon),
             const.TRIPLICITY_RULER: is_triplicity_ruler(name, lon),
-            const.FACE_RULER: is_face_ruler(name, lon),
             const.TERM_RULER: is_term_ruler(name, lon),
-        })
+            const.FACE_RULER: is_face_ruler(name, lon),
+            const.DETRIMENT: False,
+            const.FALL: False,
+            const.PEREGRINE: False,
+        }
 
-        self.score = sum({v for k, v in const.DIGNITY_SCORES.items() if self[k]})
+        data[const.PEREGRINE] = not any(data.values())
+        data[const.DETRIMENT] = is_in_detriment(name, lon)
+        data[const.FALL] = is_in_fall(name, lon)
+
+        self.data(data)
+        self.score = sum([v for k, v in const.DIGNITY_SCORES.items() if data[k]])
 
 
 def sign(lon: float) -> str:
@@ -96,12 +102,6 @@ def is_triplicity_ruler(name: str, lon: float) -> bool:
     return name in const.ESSENTIAL_DIGNITIES[sign(lon)][const.TRIPLICITY_RULER]
 
 
-def is_face_ruler(name: str, lon: float) -> bool:
-    """ Whether the passed planet is the decan ruler
-    in the passed longitude. """
-    return name in const.ESSENTIAL_DIGNITIES[sign(lon)][const.FACE_RULER][int((lon % 30) // 10)]
-
-
 def is_term_ruler(name: str, lon: float) -> bool:
     """ Whether the passed planet is the term ruler
     in the passed longitude. """
@@ -112,3 +112,9 @@ def is_term_ruler(name: str, lon: float) -> bool:
             return True
 
     return False
+
+
+def is_face_ruler(name: str, lon: float) -> bool:
+    """ Whether the passed planet is the decan ruler
+    in the passed longitude. """
+    return name in const.ESSENTIAL_DIGNITIES[sign(lon)][const.FACE_RULER][int((lon % 30) // 10)]

@@ -239,15 +239,16 @@ SLOW = 'slow'
 FAST = 'fast'
 
 
-""" Main essential dignities. """
+""" Main essential dignities and debilities. """
 
 DOMICILE = 'domicile'
 EXALTED = 'exalted'
-DETRIMENT = 'detriment'
-FALL = 'fall'
 FACE_RULER = 'face_ruler'
 TERM_RULER = 'term_ruler'
 TRIPLICITY_RULER = 'triplicity_ruler'
+DETRIMENT = 'detriment'
+FALL = 'fall'
+PEREGRINE = 'peregrine'
 
 ESSENTIAL_DIGNITIES = {
     ARIES: {
@@ -440,6 +441,7 @@ DIGNITY_SCORES = {
     FACE_RULER: 1,
     FALL: -4,
     DETRIMENT: -5,
+    PEREGRINE: -5,
 }
 
 
