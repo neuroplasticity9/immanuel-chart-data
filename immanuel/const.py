@@ -242,7 +242,9 @@ FAST = 'fast'
 """ Main essential dignities and debilities. """
 
 DOMICILE = 'domicile'
+MUTUAL_RECEPTION_HOUSE = 'mutual_reception_house'
 EXALTED = 'exalted'
+MUTUAL_RECEPTION_EXALTATION = 'mutual_reception_exaltion'
 FACE_RULER = 'face_ruler'
 TERM_RULER = 'term_ruler'
 TRIPLICITY_RULER = 'triplicity_ruler'
@@ -252,10 +254,10 @@ PEREGRINE = 'peregrine'
 
 ESSENTIAL_DIGNITIES = {
     ARIES: {
-        DOMICILE: MARS,
-        EXALTED: SUN,
-        DETRIMENT: VENUS,
-        FALL: SATURN,
+        DOMICILE: (MARS,),
+        EXALTED: (SUN,),
+        DETRIMENT: (VENUS,),
+        FALL: (SATURN,),
         TRIPLICITY_RULER: (SUN, JUPITER, SATURN),
         FACE_RULER: (MARS, SUN, VENUS),
         TERM_RULER: {
@@ -267,10 +269,10 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     TAURUS: {
-        DOMICILE: VENUS,
-        EXALTED: MOON,
-        DETRIMENT: PLUTO,
-        FALL: URANUS,
+        DOMICILE: (VENUS,),
+        EXALTED: (MOON,),
+        DETRIMENT: (PLUTO,),
+        FALL: (URANUS,),
         TRIPLICITY_RULER: (VENUS, MOON, MARS),
         FACE_RULER: (MERCURY, MOON, SATURN),
         TERM_RULER: {
@@ -282,9 +284,9 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     GEMINI: {
-        DOMICILE: MERCURY,
+        DOMICILE: (MERCURY,),
         EXALTED: (),
-        DETRIMENT: JUPITER,
+        DETRIMENT: (JUPITER,),
         FALL: (),
         TRIPLICITY_RULER: (SATURN, MERCURY, JUPITER),
         FACE_RULER: (JUPITER, MARS, SUN),
@@ -297,10 +299,10 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     CANCER: {
-        DOMICILE: MOON,
-        EXALTED: JUPITER,
-        DETRIMENT: SATURN,
-        FALL: MARS,
+        DOMICILE: (MOON,),
+        EXALTED: (JUPITER,),
+        DETRIMENT: (SATURN,),
+        FALL: (MARS,),
         TRIPLICITY_RULER: (VENUS, MARS, MOON),
         FACE_RULER: (VENUS, MERCURY, MOON),
         TERM_RULER: {
@@ -312,9 +314,9 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     LEO: {
-        DOMICILE: SUN,
-        EXALTED: NEPTUNE,
-        DETRIMENT: URANUS,
+        DOMICILE: (SUN,),
+        EXALTED: (NEPTUNE,),
+        DETRIMENT: (URANUS,),
         FALL: (),
         TRIPLICITY_RULER: (SUN, JUPITER, SATURN),
         FACE_RULER: (SATURN, JUPITER, MARS),
@@ -327,10 +329,10 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     VIRGO: {
-        DOMICILE: MERCURY,
+        DOMICILE: (MERCURY,),
         EXALTED: (MERCURY, PLUTO),
-        DETRIMENT: NEPTUNE,
-        FALL: VENUS,
+        DETRIMENT: (NEPTUNE,),
+        FALL: (VENUS,),
         TRIPLICITY_RULER: (VENUS, MOON, MARS),
         FACE_RULER: (SUN, VENUS, MERCURY),
         TERM_RULER: {
@@ -342,10 +344,10 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     LIBRA: {
-        DOMICILE: VENUS,
-        EXALTED: SATURN,
-        DETRIMENT: MARS,
-        FALL: SUN,
+        DOMICILE: (VENUS,),
+        EXALTED: (SATURN,),
+        DETRIMENT: (MARS,),
+        FALL: (SUN,),
         TRIPLICITY_RULER: (SATURN, MERCURY, JUPITER),
         FACE_RULER: (MOON, SATURN, JUPITER),
         TERM_RULER: {
@@ -358,9 +360,9 @@ ESSENTIAL_DIGNITIES = {
     },
     SCORPIO: {
         DOMICILE: (MARS, PLUTO),
-        EXALTED: URANUS,
+        EXALTED: (URANUS,),
         DETRIMENT: (),
-        FALL: MOON,
+        FALL: (MOON,),
         TRIPLICITY_RULER: (VENUS, MARS, MOON),
         FACE_RULER: (MARS, SUN, VENUS),
         TERM_RULER: {
@@ -372,9 +374,9 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     SAGITTARIUS: {
-        DOMICILE: JUPITER,
+        DOMICILE: (JUPITER,),
         EXALTED: (),
-        DETRIMENT: MERCURY,
+        DETRIMENT: (MERCURY,),
         FALL: (),
         TRIPLICITY_RULER: (SUN, JUPITER, SATURN),
         FACE_RULER: (MERCURY, MOON, SATURN),
@@ -387,10 +389,10 @@ ESSENTIAL_DIGNITIES = {
         },
     },
     CAPRICORN: {
-        DOMICILE: SATURN,
-        EXALTED: MARS,
-        DETRIMENT: MOON,
-        FALL: JUPITER,
+        DOMICILE: (SATURN,),
+        EXALTED: (MARS,),
+        DETRIMENT: (MOON,),
+        FALL: (JUPITER,),
         TRIPLICITY_RULER: (VENUS, MOON, MARS),
         FACE_RULER: (JUPITER, MARS, SUN),
         TERM_RULER: {
@@ -404,8 +406,8 @@ ESSENTIAL_DIGNITIES = {
     AQUARIUS: {
         DOMICILE: (SATURN, URANUS),
         EXALTED: (),
-        DETRIMENT: SUN,
-        FALL: NEPTUNE,
+        DETRIMENT: (SUN,),
+        FALL: (NEPTUNE,),
         TRIPLICITY_RULER: (SATURN, MERCURY, JUPITER),
         FACE_RULER: (VENUS, MERCURY, MOON),
         TERM_RULER: {
@@ -418,7 +420,7 @@ ESSENTIAL_DIGNITIES = {
     },
     PISCES: {
         DOMICILE: (JUPITER, NEPTUNE),
-        EXALTED: VENUS,
+        EXALTED: (VENUS,),
         DETRIMENT: (),
         FALL: (MERCURY, PLUTO),
         TRIPLICITY_RULER: (VENUS, MARS, MOON),
@@ -435,7 +437,9 @@ ESSENTIAL_DIGNITIES = {
 
 DIGNITY_SCORES = {
     DOMICILE: 5,
+    MUTUAL_RECEPTION_HOUSE: 5,
     EXALTED: 4,
+    MUTUAL_RECEPTION_EXALTATION: 4,
     TRIPLICITY_RULER: 3,
     TERM_RULER: 2,
     FACE_RULER: 1,

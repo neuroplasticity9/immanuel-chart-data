@@ -15,7 +15,7 @@
 
 import swisseph as swe
 
-from immanuel import const, position
+from immanuel import chart, const
 from immanuel.angles import Angle
 from immanuel.items import Item
 from immanuel.serializable import Serializable, SerializableBoolean
@@ -56,7 +56,7 @@ class Aspect(Serializable):
 
     def _condition(self) -> SerializableBoolean:
         """ Determine if the orb has pushed the aspected item out of sign. """
-        associate = position.sign(self._aspect_exact_lon) == position.sign(self.active.longitude)
+        associate = chart.sign(self._aspect_exact_lon) == chart.sign(self.active.longitude)
 
         return SerializableBoolean({
             const.ASSOCIATE: associate,

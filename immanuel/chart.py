@@ -16,7 +16,7 @@ from operator import itemgetter
 
 import swisseph as swe
 
-from immanuel import angles, aspects, const, convert, transits
+from immanuel import angles, aspects, const, convert, dignities, transits
 from immanuel.aspects import Aspect
 from immanuel.dates import DateTime
 from immanuel.items import House, AxisAngle, Planet, Point, Asteroid, FixedStar
@@ -62,6 +62,10 @@ class Chart(Serializable):
         self.asteroids = self._asteroids()
         self.fixed_stars = self._fixed_stars()
         self.aspects = self._aspects()
+
+        """ Set planet relationship data. """
+        self._mutual_receptions()
+        self._dignities()
 
     def _get_swe_houses_angles(self, swe_houses_angles: tuple = None) -> dict:
         """ This must be called first before the other chart methods. """
@@ -293,3 +297,74 @@ class Chart(Serializable):
         """ Returns which of the passed available items have been
         requested for display in this chart. """
         return {k: v for k, v in items.items() if k in self._show_items}
+
+    def _mutual_receptions(self) -> None:
+        """ TODO: Massively tidy this shit up. """
+        for name, planet in self.planets.items():
+            planet_sign_rulers = const.ESSENTIAL_DIGNITIES[planet.sign][const.DOMICILE]
+            sign_exaltations = const.ESSENTIAL_DIGNITIES[planet.sign][const.EXALTED]
+            # By sign ruler
+            for planet_sign_ruler_name in planet_sign_rulers:
+                if planet_sign_ruler_name == name:
+                    continue
+                planet_sign_ruler = self.planets[planet_sign_ruler_name]
+                if name in const.ESSENTIAL_DIGNITIES[planet_sign_ruler.sign][const.DOMICILE]:
+                    planet.mutual_reception = planet_sign_ruler_name
+                    planet_sign_ruler.mutual_reception = name
+            # By sign exaltation
+            for sign_exaltation_name in sign_exaltations:
+                if sign_exaltation_name == name:
+                    continue
+                sign_exaltation = self.planets[sign_exaltation_name]
+                if name in const.ESSENTIAL_DIGNITIES[sign_exaltation.sign][const.EXALTED]:
+                    planet.mutual_reception_exaltion = sign_exaltation_name
+                    sign_exaltation.mutual_reception_exaltion = name
+
+        # By house ruler
+        for house_number, house in self.houses.items():
+            house_rulers = const.ESSENTIAL_DIGNITIES[house.sign][const.DOMICILE]
+
+            for house_ruler_name in house_rulers:
+                planet = self.planets[house_ruler_name]
+                if planet.house == house_number:
+                    continue
+
+                planet_house_rulers = const.ESSENTIAL_DIGNITIES[self.houses[planet.house].sign][const.DOMICILE]
+
+                for planet_house_ruler_name in planet_house_rulers:
+                    planet2 = self.planets[planet_house_ruler_name]
+                    if planet2.house == house_number:
+                        planet.mutual_reception_house = planet2.house
+                        planet2.mutual_reception_house = planet.house
+
+    def _dignities(self) -> None:
+        """ Adds essential dignities, debilities and scores to the planets
+        once their positions have been calculated.
+        TODO: Also tidy up this absolute mess. """
+        for planet_name, planet in self.planets.items():
+            dignities_data = {
+                const.DOMICILE: dignities.is_domicile(planet_name, planet.longitude),
+                const.MUTUAL_RECEPTION_HOUSE: False,
+                const.EXALTED: dignities.is_exalted(planet_name, planet.longitude),
+                const.MUTUAL_RECEPTION_EXALTATION: False,
+                const.TRIPLICITY_RULER: dignities.is_triplicity_ruler(planet_name, planet.longitude),
+                const.TERM_RULER: dignities.is_term_ruler(planet_name, planet.longitude),
+                const.FACE_RULER: dignities.is_face_ruler(planet_name, planet.longitude),
+                const.DETRIMENT: False,
+                const.FALL: False,
+                const.PEREGRINE: False,
+            }
+
+            dignities_data[const.PEREGRINE] = not any(dignities_data.values())
+            dignities_data[const.DETRIMENT] = dignities.is_in_detriment(planet_name, planet.longitude)
+            dignities_data[const.FALL] = dignities.is_in_fall(planet_name, planet.longitude)
+            # Currently peregrine does not take mutual receptions into account
+            dignities_data[const.MUTUAL_RECEPTION_HOUSE] = planet.mutual_reception_house is not None
+            dignities_data[const.MUTUAL_RECEPTION_EXALTATION] = planet.mutual_reception_exaltion is not None
+
+            planet.dignities = SerializableBoolean(dignities_data)
+            planet.score = sum([v for k, v in const.DIGNITY_SCORES.items() if dignities_data[k]])
+
+def sign(lon: float) -> str:
+    """ Returns the zodiac sign the passed longitude belongs to. """
+    return const.SIGNS[int(lon / 30)]

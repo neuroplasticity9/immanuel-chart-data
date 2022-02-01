@@ -63,11 +63,14 @@ class SerializableBoolean(Serializable):
     def __init__(self, data: dict = {}):
         self.__dict__.update(data)
 
-    def data(self, data: dict):
+    def _data(self, data: dict):
         self.__dict__.update(data)
 
     def __getitem__(self, key):
         return self.__dict__.get(key, None)
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
 
     def __str__(self) -> str:
         return ', '.join((k.replace('_', ' ').title() for k, v in self if isinstance(v, bool) and v))

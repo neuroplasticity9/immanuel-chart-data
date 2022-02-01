@@ -12,10 +12,9 @@
 
 from __future__ import annotations
 
-from immanuel import angles, const, position
+from immanuel import angles, chart, const
 from immanuel.angles import Angle, SignAngle
-from immanuel.position import Movement, Motion, Dignities
-from immanuel.serializable import Serializable
+from immanuel.serializable import Serializable, SerializableBoolean
 
 
 class Item(Serializable):
@@ -28,10 +27,18 @@ class Item(Serializable):
         self.type = None
         self.name = name
         self.house = 0
-        self.sign = position.sign(lon)
+        self.sign = chart.sign(lon)
         self.longitude = SignAngle(lon)
         self.speed = Angle(speed)
-        self.movement = Movement(speed)
+        self.movement = self._movement()
+
+    def _movement(self) -> SerializableBoolean:
+        """ Retrograde, station or direct movement. """
+        return SerializableBoolean({
+            const.RETROGRADE: self.speed < -const.STATION_SPEED,
+            const.STATION: abs(self.speed) <= const.STATION_SPEED,
+            const.DIRECT: self.speed > const.STATION_SPEED,
+        })
 
     def distance_to(self, other: Item, normalise: int = angles.SHORTEST) -> Angle:
         """ Chart angle distance between two chart items. """
@@ -66,6 +73,7 @@ class House(Item):
 
 
 class Planet(Item):
+    """  """
     def __init__(self, name, house, lon, lat, dist, speed, dec, out_of_bounds):
         super().__init__(name, lon, speed)
         self.type = const.PLANET
@@ -74,15 +82,28 @@ class Planet(Item):
         self.declination = Angle(dec)
         self.distance = dist
         self.out_of_bounds = out_of_bounds
-        self.motion = Motion(speed, name)
-        self.dignities = Dignities(lon, name)
+        self.motion = self._motion()
+        self.mutual_reception = None
+        self.mutual_reception_house = None
+        self.mutual_reception_exaltion = None
+        self.dignities = None
+        self.debilities = None
+        self.score = 0
+
+    def _motion(self) -> SerializableBoolean:
+        """ Fast or slow movement. """
+        return SerializableBoolean({
+            const.SLOW: abs(self.speed) < const.MEAN_MOTIONS[self.name],
+            const.FAST: abs(self.speed) >= const.MEAN_MOTIONS[self.name],
+        })
 
     def __str__(self) -> str:
         ordinal_suffix = ('st', 'nd', 'rd')[self.house-1] if self.house < 4 else 'th'
-        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {self.dignities.score:+}'
+        return f'{super().__str__()} {self.movement} {self.house}{ordinal_suffix} house {self.score:+}'
 
 
 class Point(Item):
+    """  """
     def __init__(self, name, house, lon, speed):
         super().__init__(name, lon, speed)
         self.type = const.POINT
@@ -90,6 +111,7 @@ class Point(Item):
 
 
 class Asteroid(Item):
+    """  """
     def __init__(self, name, house, lon, dist, speed):
         super().__init__(name, lon, speed)
         self.type = const.ASTEROID
@@ -98,6 +120,7 @@ class Asteroid(Item):
 
 
 class FixedStar(Item):
+    """  """
     def __init__(self, name, house, lon, dist, speed):
         super().__init__(name, lon, speed)
         self.type = const.FIXED_STAR
