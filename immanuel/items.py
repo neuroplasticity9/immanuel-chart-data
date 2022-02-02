@@ -12,7 +12,7 @@
 
 from __future__ import annotations
 
-from immanuel import angles, chart, const
+from immanuel import angles, const
 from immanuel.angles import Angle, SignAngle
 from immanuel.serializable import Serializable, SerializableBoolean
 
@@ -27,7 +27,7 @@ class Item(Serializable):
         self.type = None
         self.name = name
         self.house = 0
-        self.sign = chart.sign(lon)
+        self.sign = const.SIGNS[int(lon / 30)]
         self.longitude = SignAngle(lon)
         self.speed = Angle(speed)
         self.movement = self._movement()

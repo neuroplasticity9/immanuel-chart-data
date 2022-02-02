@@ -344,9 +344,9 @@ class Chart(Serializable):
         for planet_name, planet in self.planets.items():
             dignities_data = {
                 const.DOMICILE: dignities.is_domicile(planet_name, planet.longitude),
-                const.MUTUAL_RECEPTION_HOUSE: False,
+                const.MUTUAL_RECEPTION_HOUSE: planet.mutual_reception_house is not None,
                 const.EXALTED: dignities.is_exalted(planet_name, planet.longitude),
-                const.MUTUAL_RECEPTION_EXALTATION: False,
+                const.MUTUAL_RECEPTION_EXALTATION: planet.mutual_reception_exaltion is not None,
                 const.TRIPLICITY_RULER: dignities.is_triplicity_ruler(planet_name, planet.longitude),
                 const.TERM_RULER: dignities.is_term_ruler(planet_name, planet.longitude),
                 const.FACE_RULER: dignities.is_face_ruler(planet_name, planet.longitude),
@@ -359,8 +359,8 @@ class Chart(Serializable):
             dignities_data[const.DETRIMENT] = dignities.is_in_detriment(planet_name, planet.longitude)
             dignities_data[const.FALL] = dignities.is_in_fall(planet_name, planet.longitude)
             # Currently peregrine does not take mutual receptions into account
-            dignities_data[const.MUTUAL_RECEPTION_HOUSE] = planet.mutual_reception_house is not None
-            dignities_data[const.MUTUAL_RECEPTION_EXALTATION] = planet.mutual_reception_exaltion is not None
+            # dignities_data[const.MUTUAL_RECEPTION_HOUSE] = planet.mutual_reception_house is not None
+            # dignities_data[const.MUTUAL_RECEPTION_EXALTATION] = planet.mutual_reception_exaltion is not None
 
             planet.dignities = SerializableBoolean(dignities_data)
             planet.score = sum([v for k, v in const.DIGNITY_SCORES.items() if dignities_data[k]])

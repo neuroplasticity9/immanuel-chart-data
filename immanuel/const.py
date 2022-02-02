@@ -443,8 +443,8 @@ DIGNITY_SCORES = {
     TRIPLICITY_RULER: 3,
     TERM_RULER: 2,
     FACE_RULER: 1,
-    FALL: -4,
     DETRIMENT: -5,
+    FALL: -4,
     PEREGRINE: -5,
 }
 
