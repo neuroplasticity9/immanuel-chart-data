@@ -21,6 +21,7 @@ from immanuel.const import angles, defaults, planets, points
 
 
 class ChartData:
+    """ This class serves as a simple static data store. """
     angles = {}
     houses = {}
     planets = {}
@@ -28,6 +29,7 @@ class ChartData:
 
 
 def angle(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
+    """ Returns one of the four main chart angles & their speed. """
     key = _get_key(jd, lat, lon, hsys)
 
     if key not in ChartData.angles:
@@ -37,6 +39,7 @@ def angle(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
 
 
 def house(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
+    """ Returns a house cusp & cusp speed. """
     key = _get_key(jd, lat, lon, hsys)
 
     if key not in ChartData.houses:
@@ -46,6 +49,9 @@ def house(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
 
 
 def point(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
+    """ Returns a calculated point by Julian date. Since the Vertex is
+    returned with the houses / ascmc by pyswisseph, this has its own
+    special case. """
     key = _get_key(jd, lat, lon, hsys)
 
     if key not in ChartData.points:
@@ -68,6 +74,9 @@ def point(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
 
 
 def planet(jd: float, index: int) -> dict:
+    """ Returns a pyswisseph object by Julian date. This can be used to
+    find more than planets only since calc_ut() is used for many other
+    objects too. """
     key = _get_key(jd, index)
 
     if key not in ChartData.planets:
@@ -122,4 +131,5 @@ def _set_angles_houses(jd: float, lat: float, lon: float, hsys: bytes) -> None:
 
 
 def _get_key(*args) -> str:
+    """ Returns a simple unique key based on date/location arguments. """
     return json.dumps([str(v) for v in args], sort_keys=True)
