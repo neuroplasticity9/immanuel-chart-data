@@ -1,3 +1,12 @@
+"""
+    This file is part of immanuel - (C) The Rift Lab
+    Author: Robert Davies (robert@theriftlab.com)
+
+
+    Defines indices for the house systems.
+
+"""
+
 ALCABITUS = b'B'
 AZIMUTHAL = b'H'
 CAMPANUS = b'C'

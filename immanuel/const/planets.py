@@ -1,3 +1,14 @@
+"""
+    This file is part of immanuel - (C) The Rift Lab
+    Author: Robert Davies (robert@theriftlab.com)
+
+
+    Defines indices for the planets and certain asteroids, as supported
+    by pyswisseph. Also defines the main planets' mean daily motions in
+    degrees.
+
+"""
+
 import swisseph as swe
 
 
