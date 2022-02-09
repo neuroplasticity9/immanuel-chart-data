@@ -1,10 +1,5 @@
-"""
-    This file is part of immanuel - (C) The Rift Lab
-    Author: Robert Davies (robert@theriftlab.com)
-
-"""
-
-from immanuel import ephemeris
+import os
+import swisseph as swe
 
 
-ephemeris.set_path()
+swe.set_ephe_path(f'{os.path.dirname(__file__)}{os.sep}resources{os.sep}ephemeris')
