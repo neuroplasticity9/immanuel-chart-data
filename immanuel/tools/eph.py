@@ -18,6 +18,7 @@ from decimal import Decimal
 import swisseph as swe
 
 from immanuel.const import angles, defaults, planets, points
+from immanuel.tools import find
 
 
 class ChartData:
@@ -26,6 +27,7 @@ class ChartData:
     houses = {}
     planets = {}
     points = {}
+    diurnal = {}
 
 
 def angle(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
@@ -48,27 +50,55 @@ def house(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
     return ChartData.houses[key][index]
 
 
-def point(jd: float, lat: float, lon: float, hsys: bytes, index: int) -> dict:
+def point(jd: float, index: int, **kwargs) -> dict:
     """ Returns a calculated point by Julian date. Since the Vertex is
     returned with the houses / ascmc by pyswisseph, this has its own
     special case. """
+    lat = kwargs.get('lat', None)
+    lon = kwargs.get('lon', None)
+    hsys = kwargs.get('hsys', None)
     key = _get_key(jd, lat, lon, hsys)
 
     if key not in ChartData.points:
-        if index == points.VERTEX:
-            _set_angles_houses(jd, lat, lon, hsys)
-            return ChartData.points[key][index]
-
         ChartData.points[key] = {}
 
     if index not in ChartData.points[key]:
-        calculated = index in (points.SOUTH_NODE, points.TRUE_SOUTH_NODE)
-        swe_index = index if not calculated else index - defaults.CALCULATED_OFFSET
-        p = planet(jd, swe_index)
-        ChartData.points[key][index] = {
-            'lon': p['lon'] if not calculated else swe.degnorm(Decimal(str(p['lon'])) - 180),
-            'speed': p['speed'],
-        }
+        if index == points.VERTEX:
+            # Get Vertex from house/ascmc calculation
+            _set_angles_houses(jd, lat, lon, hsys)
+        elif index == points.SYZYGY:
+            # Calculate prenatal full/new moon
+            sun = planet(jd, planets.SUN)
+            moon = planet(jd, planets.MOON)
+            distance = swe.difdeg2n(moon['lon'], sun['lon'])
+            syzygy_jd = find.previous_new_moon(jd) if distance > 0 else find.previous_full_moon(jd)
+            syzygy_moon = planet(syzygy_jd, planets.MOON)
+
+            ChartData.points[key][points.SYZYGY] = {
+                'lon': syzygy_moon['lon'],
+                'speed': syzygy_moon['speed'],
+            }
+        elif index == points.PARS_FORTUNA:
+            # Calculate part of furtune
+            asc = angle(jd, lat, lon, hsys, angles.ASC)
+            moon = planet(jd, planets.MOON)
+            sun = planet(jd, planets.SUN)
+            formula = (asc['lon'] + moon['lon'] - sun['lon']) if is_daytime(jd, lat, lon, hsys) else (asc['lon'] + sun['lon'] - moon['lon'])
+
+            ChartData.points[key][points.PARS_FORTUNA] = {
+                'lon': swe.degnorm(formula),
+                'speed': 0,
+            }
+        else:
+            # Get other available points
+            calculated = index in (points.SOUTH_NODE, points.TRUE_SOUTH_NODE)
+            swe_index = index if not calculated else index - defaults.CALCULATED_OFFSET
+            p = planet(jd, swe_index)
+
+            ChartData.points[key][index] = {
+                'lon': p['lon'] if not calculated else swe.degnorm(Decimal(str(p['lon'])) - 180),
+                'speed': p['speed'],
+            }
 
     return ChartData.points[key][index]
 
@@ -91,6 +121,17 @@ def planet(jd: float, index: int) -> dict:
         }
 
     return ChartData.planets[key]
+
+
+def is_daytime(jd: float, lat: float, lon: float, hsys: bytes) -> bool:
+    """ Returns whether it is daytime at the passed Julian date
+    and position. """
+    key = _get_key(jd, lat, lon, hsys)
+
+    if key not in ChartData.diurnal:
+        _set_angles_houses(jd, lat, lon, hsys)
+
+    return ChartData.diurnal[key]
 
 
 def _set_angles_houses(jd: float, lat: float, lon: float, hsys: bytes) -> None:
@@ -128,6 +169,11 @@ def _set_angles_houses(jd: float, lat: float, lon: float, hsys: bytes) -> None:
         'lon': ascmc[points.VERTEX],
         'speed': ascmcspeed[points.VERTEX],
     }
+
+    # Whether the Sun is above the horizon
+    sun = planet(jd, planets.SUN)
+    asc = ChartData.angles[key][angles.ASC]
+    ChartData.diurnal[key] = swe.difdeg2n(sun['lon'], asc['lon']) < 0
 
 
 def _get_key(*args) -> str:
