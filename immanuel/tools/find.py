@@ -25,8 +25,7 @@ import math
 import swisseph as swe
 
 from immanuel.const import aspects, defaults, planets
-from immanuel.tools import convert, eph
-from immanuel.tools.dates import DateTime
+from immanuel.tools import convert, dates, eph
 
 
 PREVIOUS = 0
@@ -81,11 +80,12 @@ def next_full_moon(jd: float) -> float:
     return next(planets.SUN, planets.MOON, aspects.OPPOSITION, jd)
 
 
-def solar_return(dt: DateTime, year: int, lat: float = None, lon: float = None) -> float:
-    """ Returns a DateTime object of the given year's solar return. """
-    year_diff = year - dt.datetime.year
-    sr_jd = dt.jd + year_diff * defaults.YEAR_DAYS
-    natal_sun = eph.planet(dt.jd, planets.SUN)
+def solar_return(jd: float, year: int) -> float:
+    """ Returns the Julian date of the given year's solar return. """
+    dt = dates.jd_to_datetime(jd)
+    year_diff = year - dt.year
+    sr_jd = jd + year_diff * defaults.YEAR_DAYS
+    natal_sun = eph.planet(jd, planets.SUN)
 
     while True:
         sr_sun = eph.planet(sr_jd, planets.SUN)
@@ -94,8 +94,7 @@ def solar_return(dt: DateTime, year: int, lat: float = None, lon: float = None) 
             break
         sr_jd += distance / sr_sun['speed']
 
-    lat, lon = (convert.string_to_dec(v) for v in (lat, lon)) if lat and lon else (dt.lat, dt.lon)
-    return DateTime(sr_jd, lat, lon)
+    return sr_jd
 
 
 def _find(first: int, second: int, aspect: float, jd: float, direction: int) -> float:
