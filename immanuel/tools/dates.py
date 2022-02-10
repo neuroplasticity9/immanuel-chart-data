@@ -30,6 +30,8 @@ class DateTime:
 
     def __init__(self, dt_jd: datetime | float, lat: float, lon: float, is_dst: bool = None):
         self.datetime = None
+        self.lat = lat
+        self.lon = lon
         self.timezone = timezone(TimezoneFinder().certain_timezone_at(lat=lat, lng=lon))
         self.dst_ambiguous = None
         self.jd = None

@@ -25,7 +25,8 @@ import math
 import swisseph as swe
 
 from immanuel.const import aspects, defaults, planets
-from immanuel.tools import eph
+from immanuel.tools import convert, eph
+from immanuel.tools.dates import DateTime
 
 
 PREVIOUS = 0
@@ -78,6 +79,23 @@ def next_full_moon(jd: float) -> float:
     distance = swe.difdegn(sun['lon'], moon['lon']) + 180
     jd += math.floor(distance) / math.ceil(planets.MEAN_MOTIONS[planets.MOON])
     return next(planets.SUN, planets.MOON, aspects.OPPOSITION, jd)
+
+
+def solar_return(dt: DateTime, year: int, lat: float = None, lon: float = None) -> float:
+    """ Returns a DateTime object of the given year's solar return. """
+    year_diff = year - dt.datetime.year
+    sr_jd = dt.jd + year_diff * defaults.YEAR_DAYS
+    natal_sun = eph.planet(dt.jd, planets.SUN)
+
+    while True:
+        sr_sun = eph.planet(sr_jd, planets.SUN)
+        distance = swe.difdeg2n(natal_sun['lon'], sr_sun['lon'])
+        if abs(distance) <= defaults.MAX_ERROR:
+            break
+        sr_jd += distance / sr_sun['speed']
+
+    lat, lon = (convert.string_to_dec(v) for v in (lat, lon)) if lat and lon else (dt.lat, dt.lon)
+    return DateTime(sr_jd, lat, lon)
 
 
 def _find(first: int, second: int, aspect: float, jd: float, direction: int) -> float:
